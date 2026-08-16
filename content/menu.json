@@ -1,0 +1,18 @@
+[
+  {
+    "label": "خانه",
+    "href": "/"
+  },
+  {
+    "label": "پروژه‌ها",
+    "href": "/projects"
+  },
+  {
+    "label": "رزومه",
+    "href": "/resume"
+  },
+  {
+    "label": "بلاگ",
+    "href": "/blog"
+  }
+]

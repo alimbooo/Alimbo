@@ -1,0 +1,4 @@
+import { assetUrl } from '@/lib/url';
+import Link from 'next/link';
+import type { Project, Category } from '@/lib/content';
+export function ProjectCard({ project, categories }: { project: Project; categories: Category[] }) { return <Link href={`/projects/${project.slug}`} className="card group block"><div className="aspect-[16/9] overflow-hidden bg-[var(--card)]"><img src={assetUrl(project.cover || '/media/profile.svg')} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /></div><div className="p-5"><div className="mb-3 flex flex-wrap gap-2">{(project.categories || []).map((slug) => <span className="tag" key={slug}>{categories.find((category) => category.slug === slug)?.name || slug}</span>)}</div><h3 className="text-xl font-bold">{project.title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{project.description}</p></div></Link>; }

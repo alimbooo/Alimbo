@@ -1,0 +1,96 @@
+{
+  "projects": [
+    {
+      "name": "ویدئو",
+      "slug": "video",
+      "parent": null,
+      "sort": 1
+    },
+    {
+      "name": "موشن",
+      "slug": "motion",
+      "parent": null,
+      "sort": 2
+    },
+    {
+      "name": "تصویربرداری",
+      "slug": "Photography",
+      "parent": null,
+      "sort": 3
+    },
+    {
+      "name": "لوگو موشن",
+      "slug": "Logo-Animation",
+      "parent": "motion",
+      "sort": 4
+    },
+    {
+      "name": "تایپوگرافی",
+      "slug": "Typography",
+      "parent": "motion",
+      "sort": 5
+    },
+    {
+      "name": "پرتره",
+      "slug": "Portrait",
+      "parent": "Photography",
+      "sort": 6
+    },
+    {
+      "name": "محصول",
+      "slug": "Product",
+      "parent": "Photography",
+      "sort": 7
+    },
+    {
+      "name": "سوشال مدیا",
+      "slug": "Social-Media",
+      "parent": "video",
+      "sort": 8
+    },
+    {
+      "name": "یوتیوب",
+      "slug": "youtube",
+      "parent": "video",
+      "sort": 9
+    }
+  ],
+  "posts": [
+    {
+      "name": "آموزش تدوین",
+      "slug": "editing",
+      "parent": null,
+      "sort": 999
+    },
+    {
+      "name": "معرفی سایت",
+      "slug": "site",
+      "parent": null,
+      "sort": 999
+    },
+    {
+      "name": "تجربیات",
+      "slug": "experience",
+      "parent": null,
+      "sort": 999
+    },
+    {
+      "name": "ابزار",
+      "slug": "tools",
+      "parent": "editing",
+      "sort": 999
+    },
+    {
+      "name": "الهام‌بخش",
+      "slug": "inspiration",
+      "parent": null,
+      "sort": 999
+    },
+    {
+      "name": "خلاقیت",
+      "slug": "creative",
+      "parent": null,
+      "sort": 999
+    }
+  ]
+}

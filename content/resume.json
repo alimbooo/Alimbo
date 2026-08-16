@@ -1,0 +1,65 @@
+{
+  "summary": "من یک ادیتور و خالق محتوای بصری هستم و روی تدوین ویدئو و ویرایش تصاویر تمرکز دارم. تلاش می‌کنم ایده‌ها را به آثاری حرفه‌ای، جذاب و تأثیرگذار تبدیل کنم. برای من جزئیات، خلاقیت و روایت اهمیت زیادی دارند و در هر پروژه سعی می‌کنم ترکیبی از نگاه شخصی و نیاز مخاطب را ارائه دهم.",
+  "experience": [
+    {
+      "id": "exp-1",
+      "title": "ادیتور ارشد",
+      "company": "استودیو نقطه",
+      "period": "۱۴۰۱ — اکنون",
+      "description": "فیلم برداری و ادیت ویدئو برای سوشال مدیا و یوتیوب",
+      "logo": "/media/studio-logo.jpg"
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-1",
+      "title": "مهندسی عمران (کارشناسی)",
+      "school": "دانشگاه تهران",
+      "period": "۱۳۹۴ — ۱۳۹۸",
+      "logo": "/media/University_of_Tehran_logo.svg"
+    }
+  ],
+  "skills": [
+    "تدوین ویدئو",
+    "ویرایش تصویر",
+    "اصلاح رنگ",
+    "موشن گرافیک",
+    "صداگذاری",
+    "داستان‌گویی بصری"
+  ],
+  "tools": [
+    "Premiere",
+    "After Effects",
+    "Adobe Lightroom",
+    "DaVinci Resolve",
+    "Adobe Audition"
+  ],
+  "certifications": [],
+  "languages": [
+    "انگلیسی — C1"
+  ],
+  "location": "ایران",
+  "maritalStatus": "",
+  "militaryService": "",
+  "birthDate": "1370",
+  "phone": "09100998877",
+  "email": "user@gmail.com",
+  "links": [
+    {
+      "label": "armain_edit",
+      "url": "https://t.me/armin"
+    },
+    {
+      "label": "Arman-ed",
+      "url": "https://linkedin.com/in/armin"
+    },
+    {
+      "label": "armino",
+      "url": "https://youtube.com/@armin"
+    },
+    {
+      "label": "arman1",
+      "url": "https://twitter.com/armin"
+    }
+  ]
+}
