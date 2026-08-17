@@ -1,5 +1,5 @@
 {
-  "name": "آرمان رضایی",
+  "name": "علی اکبری",
   "title": "طراح محصول و توسعه‌دهنده وب",
   "bio": "برای ساخت تجربه‌های دیجیتال ساده، سریع و ماندگار تلاش می‌کنم.",
   "email": "hello@example.com",
@@ -21,8 +21,8 @@
     "youtube": "https://you.com",
     "twitter": ""
   },
-  "seoTitle": "آرمان رضایی | ادیتور و فیلم بردار",
-  "seoDescription": "نمونه‌کارهای آرمان رضایی در ادیت و فیلم برداری",
+  "seoTitle": "علی اکبری | ادیتور و فیلم بردار",
+  "seoDescription": "نمونه‌کارهای علی اکبری",
   "ogImage": "/media/profile.svg",
   "font": "Arad-VF",
   "theme": {
@@ -49,7 +49,7 @@
     },
     "schemeMode": "default"
   },
-  "favicon": "/media/profile.jpg",
+  "favicon": "",
   "fonts": [
     {
       "source": "custom",
@@ -90,7 +90,7 @@
     "bodyFont": "Arad-VF",
     "headingFont": "Arad-VF"
   },
-  "footerText": "© 2026 آرمان رضایی. همه حقوق محفوظ است.",
+  "footerText": "",
   "homeLayout": [
     {
       "id": "projects",
