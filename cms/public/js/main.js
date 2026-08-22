@@ -17,44 +17,18 @@ import { newPage, editPage, deletePage, savePage } from './views/pages.js';
 import { addMenuItem, deleteMenuItem, saveMenu, saveMenuAuto, handleDragStartMenu, handleDragOverMenu, handleDropMenu, handleDragEndMenu, toggleMenuVisibility } from './views/menu.js';
 import { saveHero, cancelHero, handleDragStartHome, handleDragOverHome, handleDropHome, handleDragEndHome } from './views/hero.js';
 import { renderUpdate, checkUpdate, startUpdate } from './views/update.js';
+import { renderPreview, startPreview, cancelPreview, openPreviewTab } from './views/preview.js';
 
 // Expose router functions for inline HTML handlers
 window.show = show;
 window.render = render;
 window.toggleGroup = toggleGroup;
 
-// Expose preview handler
-window.openPreview = async function openPreview() {
-  const win = window.open('about:blank', '_blank');
-  try {
-    await api('/api/dev', { method: 'POST' });
-
-    // wait for preview helper
-    async function waitForPreview(timeoutMs = 30000) {
-      const start = Date.now();
-      while (Date.now() - start < timeoutMs) {
-        try {
-          await fetch('http://localhost:3000', { mode: 'no-cors', cache: 'no-store' });
-          return true;
-        } catch (_) {}
-        await new Promise((resolve) => setTimeout(resolve, 400));
-      }
-      return false;
-    }
-
-    const ready = await waitForPreview();
-    if (!ready) {
-      if (win) win.close();
-      alert('پیش‌نمایش آماده نشد. چند ثانیه بعد دوباره امتحان کنید.');
-      return;
-    }
-    if (win) win.location.href = 'http://localhost:3000';
-    else window.open('http://localhost:3000', '_blank');
-  } catch (_) {
-    if (win) win.close();
-    alert('خطا در اجرای پیش‌نمایش');
-  }
-};
+// Expose preview handlers for inline HTML
+window.renderPreview = renderPreview;
+window.startPreview = startPreview;
+window.cancelPreview = cancelPreview;
+window.openPreviewTab = openPreviewTab;
 
 // Expose other components needed in HTML or dynamically generated strings
 window.openMediaModal = openMediaModal;

@@ -8,6 +8,7 @@ const root = process.cwd();
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
 const writeJson = (file, data) => fs.writeFileSync(path.join(root, file), JSON.stringify(data, null, 2) + '\n');
 const send = (res, status, body, type = 'application/json') => {
+  if (res.writableEnded || res.destroyed) return;
   res.writeHead(status, { 'Content-Type': type, 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' });
   res.end(typeof body === 'string' || Buffer.isBuffer(body) ? body : JSON.stringify(body));
 };
@@ -67,7 +68,8 @@ function runCommand(cmd, args, label, res) {
 
 function runGit(args) {
     return new Promise((resolve, reject) => {
-      const proc = spawn('git.exe', args, {
+      const gitCmd = process.platform === 'win32' ? 'git.exe' : 'git';
+      const proc = spawn(gitCmd, args, {
         cwd: root,
         shell: false,
         windowsVerbatimArguments: false,
@@ -84,6 +86,24 @@ function runGit(args) {
           code,
           output: output.trim(),
         });
+      });
+    });
+  }
+
+function runCommandAsync(cmd, args, opts = {}) {
+    return new Promise((resolve, reject) => {
+      const proc = spawn(cmd, args, {
+        cwd: opts.cwd || root,
+        shell: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+      let stdout = '';
+      let stderr = '';
+      proc.stdout.on('data', (d) => (stdout += d.toString()));
+      proc.stderr.on('data', (d) => (stderr += d.toString()));
+      proc.on('error', reject);
+      proc.on('close', (code) => {
+        resolve({ code, stdout: stdout.trim(), stderr: stderr.trim() });
       });
     });
   }
@@ -131,20 +151,113 @@ function getLatestVersion(tags) {
   return validTags[0];
 }
 
-const PRESERVED_DIRS = ['content', 'public'];
+// ----- Update helpers -----
 
-function backupPreservedDirs(backupRoot) {
-  for (const dirName of PRESERVED_DIRS) {
-    const src = path.join(root, dirName);
-    if (fs.existsSync(src)) {
-      fs.cpSync(src, path.join(backupRoot, dirName), { recursive: true });
+// Directories and files to skip during full backup (generated, caches, large binaries)
+const BACKUP_SKIP = new Set([
+  'node_modules', '.next', 'out', '.git',
+  '.freebuff', '.github',
+  'backup-update-', // prefix match
+]);
+
+function readGitignorePatterns() {
+  const patterns = [];
+  const gitignorePath = path.join(root, '.gitignore');
+  if (!fs.existsSync(gitignorePath)) return patterns;
+  const lines = fs.readFileSync(gitignorePath, 'utf8').split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    let p = trimmed;
+    // Remove trailing slash for directory matching
+    const isDirPattern = p.endsWith('/');
+    if (isDirPattern) p = p.slice(0, -1);
+    // Strip leading slash
+    if (p.startsWith('/')) p = p.slice(1);
+    if (!p) continue;
+    patterns.push({ raw: p, isDir: isDirPattern });
+  }
+  return patterns;
+}
+
+function isSkippedByGitignore(name, isDir, patterns) {
+  for (const pat of patterns) {
+    // Simple glob matching: support * and ** prefixes
+    if (pat.raw.startsWith('**/')) {
+      const suffix = pat.raw.slice(3);
+      if (name === suffix || name.endsWith('/' + suffix)) return true;
+      continue;
+    }
+    if (pat.raw.includes('*')) {
+      // Simple glob: *.log, .env*.local
+      const regex = new RegExp('^' + pat.raw.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+      if (regex.test(name)) return true;
+      continue;
+    }
+    if (name === pat.raw) return true;
+    if (name.startsWith(pat.raw + '/')) return true;
+  }
+  return false;
+}
+
+function shouldSkipBackup(name, isDir, gitignorePatterns) {
+  if (BACKUP_SKIP.has(name)) return true;
+  // Skip any backup directories from previous runs
+  if (name.startsWith('backup-update-')) return true;
+  if (isSkippedByGitignore(name, isDir, gitignorePatterns)) return true;
+  return false;
+}
+
+function fullBackup(backupDir, sendEvent) {
+  const gitignorePatterns = readGitignorePatterns();
+  if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
+
+  const entries = fs.readdirSync(root);
+  for (const entry of entries) {
+    const fullPath = path.join(root, entry);
+    let stat;
+    try { stat = fs.statSync(fullPath); } catch { continue; }
+    if (shouldSkipBackup(entry, stat.isDirectory(), gitignorePatterns)) continue;
+
+    const dest = path.join(backupDir, entry);
+    if (stat.isDirectory()) {
+      fs.cpSync(fullPath, dest, { recursive: true });
+    } else {
+      fs.copyFileSync(fullPath, dest);
     }
   }
 }
 
-function restorePreservedDirs(backupRoot) {
-  for (const dirName of PRESERVED_DIRS) {
-    const src = path.join(backupRoot, dirName);
+function fullRestore(backupDir, sendEvent) {
+  if (!fs.existsSync(backupDir)) throw new Error('Backup directory not found: ' + backupDir);
+
+  const entries = fs.readdirSync(backupDir);
+  // Remove current project files (except .git, node_modules, .next)
+  const currentEntries = fs.readdirSync(root);
+  for (const entry of currentEntries) {
+    if (entry === '.git' || entry === 'node_modules' || entry === '.next') continue;
+    if (entry.startsWith('backup-update-')) continue;
+    try {
+      fs.rmSync(path.join(root, entry), { recursive: true, force: true });
+    } catch { /* best effort */ }
+  }
+
+  // Copy backup entries back
+  for (const entry of entries) {
+    const src = path.join(backupDir, entry);
+    const dest = path.join(root, entry);
+    const stat = fs.statSync(src);
+    if (stat.isDirectory()) {
+      fs.cpSync(src, dest, { recursive: true });
+    } else {
+      fs.copyFileSync(src, dest);
+    }
+  }
+}
+
+function restoreContentOnly(backupDir) {
+  for (const dirName of ['content', 'public']) {
+    const src = path.join(backupDir, dirName);
     const dest = path.join(root, dirName);
     if (fs.existsSync(src)) {
       if (fs.existsSync(dest)) {
@@ -153,6 +266,15 @@ function restorePreservedDirs(backupRoot) {
       fs.cpSync(src, dest, { recursive: true });
     }
   }
+}
+
+function depsChanged(oldBackupDir) {
+  const oldPkg = path.join(oldBackupDir, 'package-lock.json');
+  const newPkg = path.join(root, 'package-lock.json');
+  if (!fs.existsSync(oldPkg) || !fs.existsSync(newPkg)) return true;
+  const oldContent = fs.readFileSync(oldPkg, 'utf8');
+  const newContent = fs.readFileSync(newPkg, 'utf8');
+  return oldContent !== newContent;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -393,10 +515,99 @@ const server = http.createServer(async (req, res) => {
         return send(res, 200, { ok: true });
       }
 
-      // Dev server
+      // ==================== Preview server ====================
+      // Health-check the local Next.js dev server
+      const isPreviewRunning = async () => {
+        try {
+          const controller = new AbortController();
+          const t = setTimeout(() => controller.abort(), 2000);
+          try {
+            const resp = await fetch('http://localhost:3000', { signal: controller.signal, cache: 'no-store' });
+            return resp.ok || resp.status === 404 || resp.status === 200;
+          } finally {
+            clearTimeout(t);
+          }
+        } catch (_) {
+          return false;
+        }
+      };
+
+      // Terminate the whole process tree spawned by this server (cmd/npm wrapper + Next.js child).
+      // On Windows, .kill() only kills the cmd.exe wrapper, so use taskkill /T /F for the full tree.
+      const killPreviewTree = async () => {
+        const proc = devProcess;
+        if (!proc || !proc.pid) return false;
+        const pid = proc.pid;
+        try {
+          if (process.platform === 'win32') {
+            await new Promise((resolve) => {
+              const killer = spawn('taskkill', ['/pid', String(pid), '/T', '/F'], { stdio: 'ignore' });
+              killer.on('close', resolve);
+              killer.on('error', resolve);
+            });
+          } else {
+            // detached:true gives the spawned shell its own process group; kill the whole group
+            try { process.kill(-pid, 'SIGTERM'); } catch (_) { try { process.kill(pid, 'SIGTERM'); } catch (__) {} }
+            // Grace period, then escalate to SIGKILL in case children ignore SIGTERM
+            await new Promise((r) => setTimeout(r, 2000));
+            try { process.kill(-pid, 'SIGKILL'); } catch (_) { try { process.kill(pid, 'SIGKILL'); } catch (__) {} }
+          }
+        } catch (_) {
+          try { proc.kill(); } catch (__) {}
+        }
+        return true;
+      };
+
+      const waitForPortFree = async (timeoutMs = 10000) => {
+        const start = Date.now();
+        while (Date.now() - start < timeoutMs) {
+          if (!(await isPreviewRunning())) return true;
+          await new Promise((r) => setTimeout(r, 300));
+        }
+        return !(await isPreviewRunning());
+      };
+
+      if (pathname === '/api/preview/status' && method === 'GET') {
+        const running = await isPreviewRunning();
+        return send(res, 200, { running, url: 'http://localhost:3000' });
+      }
+
+      if (pathname === '/api/preview/start' && method === 'POST') {
+        // Already responding — do not start another process
+        if (await isPreviewRunning()) {
+          return send(res, 200, { ok: true, alreadyRunning: true, url: 'http://localhost:3000' });
+        }
+        // Our own process exists but isn't answering yet (still booting) — don't double-spawn
+        if (devProcess && !devProcess.killed) {
+          return send(res, 200, { ok: true, starting: true, url: 'http://localhost:3000' });
+        }
+        // detached:true so the tree can be killed as a group on POSIX; on Windows taskkill /T walks the tree
+        devProcess = spawn('npm', ['run', 'dev'], { cwd: root, shell: true, stdio: 'ignore', detached: true });
+        devProcess.on('exit', () => { devProcess = null; });
+        return send(res, 200, { ok: true, started: true, url: 'http://localhost:3000' });
+      }
+
+      if (pathname === '/api/preview/stop' && method === 'POST') {
+        // Only terminate a process this server started (devProcess is only ever set when we spawn).
+        // A pre-existing server is never touched — devProcess stays null for it.
+        let stopped = false;
+        if (devProcess) {
+          stopped = await killPreviewTree();
+          devProcess = null; // clear stored state immediately — refresh must not see the old preview
+          // Do not report success until the port is actually released
+          const portFree = await waitForPortFree();
+          return send(res, 200, { ok: true, stopped, portFree });
+        }
+        // Nothing of ours to stop — never wait on or touch an unrelated process
+        return send(res, 200, { ok: true, stopped: false, portFree: !(await isPreviewRunning()) });
+      }
+
+      // Legacy alias kept for compatibility
       if (pathname === '/api/dev' && method === 'POST') {
+        if (await isPreviewRunning()) return send(res, 200, { ok: true, message: 'already running' });
         if (devProcess && !devProcess.killed) return send(res, 200, { ok: true, message: 'already running' });
-        devProcess = spawn('npm', ['run', 'dev'], { cwd: root, shell: true, stdio: 'ignore' });
+        devProcess = spawn('npm', ['run', 'dev'], { cwd: root, shell: true, stdio: 'ignore', detached: true });
+        devProcess.on('exit', () => { devProcess = null; });
         return send(res, 200, { ok: true, message: 'started' });
       }
 
@@ -462,18 +673,39 @@ const server = http.createServer(async (req, res) => {
         }
       }
 
-      // ==================== Update Start ====================
+      // ==================== Update Start (SSE) ====================
       if (pathname === '/api/update/start' && method === 'POST') {
+        // Set SSE headers
+        res.writeHead(200, {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'Access-Control-Allow-Origin': '*',
+          'X-Accel-Buffering': 'no',
+        });
+
+        const sse = (event, data) => {
+          if (res.writableEnded || res.destroyed) return;
+          res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+        };
+
         const backupDir = path.join(path.dirname(root), `backup-update-${Date.now()}`);
+        const versionFile = path.join(root, 'VERSION');
+        let latestVersion = '';
+        let currentVersion = '0.0.0';
+        let rollbackNeeded = false;
+        let backupCreated = false;
+
         try {
+          // --- Step: preparing ---
+          sse('step', { step: 'preparing', status: 'running' });
+
           const statusRes = await runGit(['status', '--porcelain']);
           if (statusRes.code !== 0) throw new Error('Failed to check git status.');
           if (statusRes.output.trim() !== '') {
-            return send(res, 400, { error: 'Your git working tree is not clean. Please commit or push your changes first.' });
+            throw new Error('مخزن گیت تغییرات ذخیره‌نشده دارد. لطفاً ابتدا تغییرات خود را منتشر کنید.');
           }
 
-          const versionFile = path.join(root, 'VERSION');
-          let currentVersion = '0.0.0';
           if (fs.existsSync(versionFile)) {
             currentVersion = fs.readFileSync(versionFile, 'utf8').trim();
           }
@@ -484,23 +716,26 @@ const server = http.createServer(async (req, res) => {
           const tagsRes = await runGit(['tag', '-l']);
           if (tagsRes.code !== 0) throw new Error('Failed to list tags.');
 
-          let latestVersion = currentVersion;
+          latestVersion = currentVersion;
           const tags = tagsRes.output.split('\n').map(t => t.trim()).filter(Boolean);
           const found = getLatestVersion(tags);
           if (found) latestVersion = found;
 
           if (!isNewer(latestVersion, currentVersion)) {
-            return send(res, 400, { error: 'You are already on the latest version.' });
+            throw new Error('شما از آخرین نسخه استفاده می‌کنید.');
           }
 
-          // Backup step
-          try {
-            backupPreservedDirs(backupDir);
-          } catch (e) {
-            throw new Error('Failed to backup content/public directories: ' + e.message);
-          }
+          sse('step', { step: 'preparing', status: 'done' });
 
-          // Full Replacement step
+          // --- Step: creating backup ---
+          sse('step', { step: 'backup', status: 'running' });
+          fullBackup(backupDir, sse);
+          backupCreated = true;
+          sse('step', { step: 'backup', status: 'done' });
+
+          // --- Step: downloading & applying update ---
+          sse('step', { step: 'download', status: 'running' });
+
           const rmRes = await runGit(['rm', '-rf', '.']);
           if (rmRes.code !== 0 && !rmRes.output.includes('did not match any files')) {
             throw new Error('Git rm failed: ' + rmRes.output);
@@ -512,15 +747,38 @@ const server = http.createServer(async (req, res) => {
           const cleanRes = await runGit(['clean', '-fd']);
           if (cleanRes.code !== 0) throw new Error('Git clean failed: ' + cleanRes.output);
 
-          // Restore content and public
-          if (fs.existsSync(backupDir)) {
-            restorePreservedDirs(backupDir);
+          sse('step', { step: 'download', status: 'done' });
+
+          // --- Step: restoring user content ---
+          sse('step', { step: 'restore_content', status: 'running' });
+          restoreContentOnly(backupDir);
+          sse('step', { step: 'restore_content', status: 'done' });
+
+          // --- Step: installing dependencies ---
+          if (depsChanged(backupDir)) {
+            sse('step', { step: 'deps_install', status: 'running' });
+            const installRes = await runCommandAsync('npm', ['ci'], { cwd: root });
+            if (installRes.code !== 0) {
+              throw new Error('npm ci failed:\n' + (installRes.stderr || installRes.stdout));
+            }
+            sse('step', { step: 'deps_install', status: 'done' });
+          } else {
+            sse('step', { step: 'deps_install', status: 'skipped', reason: 'بدون تغییر' });
           }
 
-          // Update VERSION
+          // --- Step: running tests ---
+          sse('step', { step: 'test', status: 'running' });
+          const testRes = await runCommandAsync('npm', ['run', 'test'], { cwd: root });
+          if (testRes.code !== 0) {
+            throw new Error('npm run test failed with code ' + testRes.code + ':\n' + (testRes.stderr || testRes.stdout));
+          }
+          sse('step', { step: 'test', status: 'done' });
+
+          // --- Step: finalizing ---
+          sse('step', { step: 'finalize', status: 'running' });
+
           fs.writeFileSync(versionFile, latestVersion + '\n');
 
-          // Validate everything and commit
           const addRes = await runGit(['add', '-A']);
           if (addRes.code !== 0) throw new Error('Git add failed: ' + addRes.output);
 
@@ -529,26 +787,49 @@ const server = http.createServer(async (req, res) => {
             throw new Error('Git commit failed: ' + commitRes.output);
           }
 
-          const pushRes = await runGit(['push', 'origin', 'HEAD']);
-          if (pushRes.code !== 0) {
-            throw new Error('Git push failed: ' + pushRes.output);
-          }
+          // No auto-push — user controls publishing
+          sse('step', { step: 'finalize', status: 'done' });
 
-          // If everything succeeds, remove the backup
+          // Success — clean up backup
           if (fs.existsSync(backupDir)) {
             fs.rmSync(backupDir, { recursive: true, force: true });
           }
 
-          return send(res, 200, { newVersion: latestVersion });
+          sse('done', { newVersion: latestVersion });
         } catch (err) {
-          // On failure, rollback working directory as much as possible
-          await runGit(['reset', '--hard', 'HEAD']).catch(() => {});
-          await runGit(['clean', '-fd']).catch(() => {});
-          if (fs.existsSync(backupDir)) {
-            restorePreservedDirs(backupDir);
+          const errorMsg = err.message || String(err);
+
+          // Mark current step as failed
+          sse('step', { status: 'error', error: errorMsg });
+
+          // Attempt rollback if backup exists
+          if (backupCreated) {
+            rollbackNeeded = true;
+            sse('action', { action: 'rollback_start' });
+
+            try {
+              const rollbackRes = await runGit(['reset', '--hard', 'HEAD']).catch(() => ({ code: -1 }));
+              await runGit(['clean', '-fd']).catch(() => {});
+
+              // Full restore from backup
+              fullRestore(backupDir, sse);
+
+              // Restore dependencies
+              await runCommandAsync('npm', ['i'], { cwd: root });
+
+              sse('action', { action: 'rollback_done', success: true });
+            } catch (rollbackErr) {
+              sse('action', { action: 'rollback_done', success: false, error: rollbackErr.message || String(rollbackErr) });
+            }
           }
-          return send(res, 500, { error: err.message || String(err) });
+
+          sse('done', { error: errorMsg, rolledBack: rollbackNeeded });
+        } finally {
+          if (!res.writableEnded) {
+            res.end();
+          }
         }
+        return; // response already streamed via SSE — never fall through to send()
       }
 
       // Publish to GitHub

@@ -14,6 +14,7 @@ import { renderTypography } from '../views/typography.js';
 import { renderPublish } from '../views/publish.js';
 import { renderHero } from '../views/hero.js';
 import { renderUpdate } from '../views/update.js';
+import { renderPreview } from '../views/preview.js';
 
 export function toggleGroup(id) {
   const group = document.getElementById('group-' + id);
@@ -63,6 +64,7 @@ export function render() {
     if (state.currentView === 'post-edit') return renderPostEdit();
   if (state.currentView === 'hero') return renderHero();
   if (state.currentView === 'update') return renderUpdate();
+  if (state.currentView === 'preview') return renderPreview();
 }
 
 window.addEventListener('hashchange', () => {
