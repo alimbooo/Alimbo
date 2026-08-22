@@ -18,8 +18,9 @@ export function generateStaticParams() {
   return pages.map((page) => ({ slug: page.slug }));
 }
 
-export default function NormalPage({ params }: { params: { slug: string } }) {
-  const page = getPage(params.slug);
+export default async function NormalPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const page = getPage(slug);
   if (!page) notFound();
 
   return (

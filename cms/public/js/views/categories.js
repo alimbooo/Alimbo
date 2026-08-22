@@ -117,7 +117,7 @@ export function openCatModal(index = -1) {
     parentOptions += `<option value="${cat.slug}" ${c.parent === cat.slug ? 'selected' : ''}>${cat.name}</option>`;
   });
 
-  const delBtnHtml = isEdit ? `<button class="btn danger" style="margin-right:auto;" onclick="deleteCat(${index}); this.parentElement.parentElement.parentElement.remove()">حذف</button>` : '';
+  const delBtnHtml = isEdit ? `<button class="btn danger" style="margin-right:auto;" id="cat-delete-btn">حذف</button>` : '';
 
   m.innerHTML = `
     <div class="modal-content" style="max-width:400px">
@@ -147,6 +147,17 @@ export function openCatModal(index = -1) {
     </div>
   `;
   document.body.appendChild(m);
+
+  // Attach delete handler to the button inside the modal
+  if (isEdit) {
+    const delBtn = document.getElementById('cat-delete-btn');
+    if (delBtn) {
+      delBtn.addEventListener('click', async () => {
+        await deleteCat(index);
+        m.remove();
+      });
+    }
+  }
 }
 
 export async function saveCat(index, modalNode) {
@@ -174,42 +185,29 @@ export async function saveCat(index, modalNode) {
 }
 
 export async function deleteCat(i) {
-  if(confirm('حذف شود؟ با حذف این دسته، تمامی زیردسته‌های آن نیز حذف خواهند شد.')) {
-    const deletedSlug = state.categories[i].slug;
+  const cat = state.categories[i];
+  if (!cat) return;
 
-    let toDelete = new Set([deletedSlug]);
-    let added = true;
-    while(added) {
-      added = false;
-      state.categories.forEach(c => {
-        if(toDelete.has(c.parent) && !toDelete.has(c.slug)) {
-          toDelete.add(c.slug);
-          added = true;
-        }
-      });
+  // Count children for a better confirmation message
+  const children = state.categories.filter(c => c.parent === cat.slug);
+  const extra = children.length > 0 ? `همچنین ${children.length} زیردسته نیز به همراه آن حذف خواهند شد.` : '';
+  if (!confirm(`آیا از حذف «${cat.name}» اطمینان دارید؟ ${extra} دسته‌بندی‌های حذف‌شده از تمام پروژه‌ها و نوشته‌ها نیز پاک خواهند شد.`)) return;
+
+  try {
+    const result = await api('/api/categories/delete', {
+      method: 'POST',
+      body: JSON.stringify({ slug: cat.slug }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (!result.ok) {
+      showMsg(result.error || 'خطا در حذف دسته', true);
+      return;
     }
-
-    const newCategories = state.categories.filter(c => !toDelete.has(c.slug));
-
-    for (const project of state.projects) {
-      if (project.categories && project.categories.some(c => toDelete.has(c))) {
-        project.categories = project.categories.filter(c => !toDelete.has(c));
-        await api('/api/projects', { method: 'POST', body: JSON.stringify(project), headers: { 'Content-Type': 'application/json' } });
-      }
-    }
-
-    for (const post of state.posts) {
-      if (post.categories && post.categories.some(c => toDelete.has(c))) {
-        post.categories = post.categories.filter(c => !toDelete.has(c));
-        await api('/api/posts', { method: 'POST', body: JSON.stringify(post), headers: { 'Content-Type': 'application/json' } });
-      }
-    }
-
-    state.categories.length = 0;
-    state.categories.push(...newCategories);
-
-    renderCatList();
-    saveCategories();
+    await loadAll();
+    showMsg(`دسته و ${result.deletedCount ? result.deletedCount - 1 : 0} زیردسته با موفقیت حذف شدند`);
+    if (state.currentCatType === 'posts') renderPostCategories(); else renderCategories();
+  } catch (e) {
+    showMsg('خطا در ارتباط با سرور هنگام حذف دسته', true);
   }
 }
 

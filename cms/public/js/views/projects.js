@@ -2,7 +2,7 @@ import { state, dom } from '../core/state.js';
 import { api } from '../core/api.js';
 import { loadAll, loadMedia } from '../core/data.js';
 import { show, render } from '../core/router.js';
-import { val } from '../utils/helpers.js';
+import { val, showMsg } from '../utils/helpers.js';
 
 export function renderProjects() {
   dom.content.innerHTML = `
@@ -227,19 +227,28 @@ export async function saveProject() {
     videoUrl: videoUrlEl ? videoUrlEl.value : (state.editingProject.videoUrl || ''),
     content: val('f-content'), images: state.editingProject.images || [], originalSlug: state.editingProject.originalSlug,
   };
-  await api('/api/projects', { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } });
-  await loadAll();
 
-  state.editingProject = state.projects.find(p => p.slug === data.slug) || data;
-  state.editingProject.originalSlug = data.slug;
-  renderProjectEdit();
+  try {
+    const result = await api('/api/projects', { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } });
+    if (!result.ok && result.error) {
+      showMsg(result.error, true);
+      return;
+    }
+    await loadAll();
 
-  const btn = document.querySelector('button[onclick="saveProject()"]');
-  if (btn) {
-    const origText = btn.innerHTML;
-    btn.innerHTML = 'ذخیره شد ✓';
-    btn.classList.add('ok');
-    setTimeout(() => { btn.innerHTML = origText; btn.classList.remove('ok'); }, 2000);
+    state.editingProject = state.projects.find(p => p.slug === data.slug) || data;
+    state.editingProject.originalSlug = data.slug;
+    renderProjectEdit();
+
+    const btn = document.querySelector('button[onclick="saveProject()"]');
+    if (btn) {
+      const origText = btn.innerHTML;
+      btn.innerHTML = 'ذخیره شد ✓';
+      btn.classList.add('ok');
+      setTimeout(() => { btn.innerHTML = origText; btn.classList.remove('ok'); }, 2000);
+    }
+  } catch (e) {
+    showMsg('خطا در ارتباط با سرور هنگام ذخیره پروژه', true);
   }
 }
 

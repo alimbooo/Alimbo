@@ -169,6 +169,75 @@ const server = http.createServer(async (req, res) => {
       if (pathname === '/api/site' && method === 'POST') { const d = await readBody(req); writeJson('content/site.json', d); return send(res, 200, { ok: true }); }
       if (pathname === '/api/categories' && method === 'GET') return send(res, 200, readJson('content/categories.json'));
       if (pathname === '/api/categories' && method === 'POST') { const d = await readBody(req); writeJson('content/categories.json', d); return send(res, 200, { ok: true }); }
+
+      if (pathname === '/api/categories/delete' && method === 'POST') {
+        try {
+          const d = await readBody(req);
+          const slug = d.slug;
+          if (!slug) return send(res, 400, { error: 'شناسه دسته الزامی است' });
+
+          const cats = readJson('content/categories.json');
+
+          // Collect all descendant slugs recursively
+          const toDelete = new Set();
+          const queue = [slug];
+          while (queue.length) {
+            const cur = queue.pop();
+            if (toDelete.has(cur)) continue;
+            toDelete.add(cur);
+            for (const key of ['projects', 'posts']) {
+              for (const c of (cats[key] || [])) {
+                if (c.parent === cur && !toDelete.has(c.slug)) {
+                  queue.push(c.slug);
+                }
+              }
+            }
+          }
+
+          // Remove from categories.json
+          for (const key of ['projects', 'posts']) {
+            cats[key] = (cats[key] || []).filter(c => !toDelete.has(c.slug));
+          }
+          writeJson('content/categories.json', cats);
+
+          // Remove references from all project .md files
+          const projectsDir = path.join(root, 'content/projects');
+          if (fs.existsSync(projectsDir)) {
+            for (const f of fs.readdirSync(projectsDir).filter(f => f.endsWith('.md'))) {
+              const filePath = path.join(projectsDir, f);
+              const parsed = matter(fs.readFileSync(filePath, 'utf8'));
+              if (Array.isArray(parsed.data.categories)) {
+                const filtered = parsed.data.categories.filter(c => !toDelete.has(c));
+                if (filtered.length !== parsed.data.categories.length) {
+                  const updated = matter.stringify(parsed.content, { ...parsed.data, categories: filtered });
+                  fs.writeFileSync(filePath, updated);
+                }
+              }
+            }
+          }
+
+          // Remove references from all blog post .md files
+          const blogDir = path.join(root, 'content/blog');
+          if (fs.existsSync(blogDir)) {
+            for (const f of fs.readdirSync(blogDir).filter(f => f.endsWith('.md'))) {
+              const filePath = path.join(blogDir, f);
+              const parsed = matter(fs.readFileSync(filePath, 'utf8'));
+              if (Array.isArray(parsed.data.categories)) {
+                const filtered = parsed.data.categories.filter(c => !toDelete.has(c));
+                if (filtered.length !== parsed.data.categories.length) {
+                  const updated = matter.stringify(parsed.content, { ...parsed.data, categories: filtered });
+                  fs.writeFileSync(filePath, updated);
+                }
+              }
+            }
+          }
+
+          return send(res, 200, { ok: true, deletedCount: toDelete.size });
+        } catch (e) {
+          return send(res, 500, { error: 'خطا در حذف دسته: ' + (e.message || String(e)) });
+        }
+      }
+
       if (pathname === '/api/resume' && method === 'GET') return send(res, 200, readJson('content/resume.json'));
       if (pathname === '/api/resume' && method === 'POST') { const d = await readBody(req); writeJson('content/resume.json', d); return send(res, 200, { ok: true }); }
 
@@ -182,16 +251,23 @@ const server = http.createServer(async (req, res) => {
         const d = await readBody(req);
         if (!d.slug) return send(res, 400, { error: 'slug is required' });
 
-        if (d.originalSlug && d.originalSlug !== d.slug) {
-          const oldFile = path.join(root, 'content/projects', `${d.originalSlug}.md`);
-          if (fs.existsSync(oldFile)) {
-            fs.unlinkSync(oldFile);
-          }
-        }
+        try {
+          const dir = path.join(root, 'content/projects');
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-        const file = path.join(root, 'content/projects', `${d.slug}.md`);
-        fs.writeFileSync(file, projectToMarkdown(d));
-        return send(res, 200, { ok: true });
+          if (d.originalSlug && d.originalSlug !== d.slug) {
+            const oldFile = path.join(dir, `${d.originalSlug}.md`);
+            if (fs.existsSync(oldFile)) {
+              fs.unlinkSync(oldFile);
+            }
+          }
+
+          const file = path.join(dir, `${d.slug}.md`);
+          fs.writeFileSync(file, projectToMarkdown(d));
+          return send(res, 200, { ok: true });
+        } catch (e) {
+          return send(res, 500, { error: 'خطا در ذخیره پروژه: ' + (e.message || String(e)) });
+        }
       }
       if (pathname === '/api/projects' && method === 'DELETE') {
         const d = await readBody(req);
@@ -210,16 +286,23 @@ const server = http.createServer(async (req, res) => {
         const d = await readBody(req);
         if (!d.slug) return send(res, 400, { error: 'slug is required' });
 
-        if (d.originalSlug && d.originalSlug !== d.slug) {
-          const oldFile = path.join(root, 'content/blog', `${d.originalSlug}.md`);
-          if (fs.existsSync(oldFile)) {
-            fs.unlinkSync(oldFile);
-          }
-        }
+        try {
+          const dir = path.join(root, 'content/blog');
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-        const file = path.join(root, 'content/blog', `${d.slug}.md`);
-        fs.writeFileSync(file, postToMarkdown(d));
-        return send(res, 200, { ok: true });
+          if (d.originalSlug && d.originalSlug !== d.slug) {
+            const oldFile = path.join(dir, `${d.originalSlug}.md`);
+            if (fs.existsSync(oldFile)) {
+              fs.unlinkSync(oldFile);
+            }
+          }
+
+          const file = path.join(dir, `${d.slug}.md`);
+          fs.writeFileSync(file, postToMarkdown(d));
+          return send(res, 200, { ok: true });
+        } catch (e) {
+          return send(res, 500, { error: 'خطا در ذخیره نوشته: ' + (e.message || String(e)) });
+        }
       }
       if (pathname === '/api/posts' && method === 'DELETE') {
         const d = await readBody(req);

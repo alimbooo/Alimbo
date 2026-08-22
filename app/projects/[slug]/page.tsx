@@ -82,8 +82,9 @@ export function generateStaticParams() {
   return getProjects().map((project) => ({ slug: project.slug }));
 }
 
-export default function ProjectPage({ params }: { params: { slug: string } }) {
-  const project = getProject(params.slug);
+export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const project = getProject(slug);
   if (!project) notFound();
   const categories = getCategories();
   const projects = getProjects();

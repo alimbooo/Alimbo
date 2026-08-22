@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "cms": "node cms/server.js",
     "validate": "node scripts/validate-content.mjs",
@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
-    "next": "^14.2.5",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "next": "^16.3.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",

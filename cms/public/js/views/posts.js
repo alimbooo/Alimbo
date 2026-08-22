@@ -2,7 +2,7 @@ import { state, dom } from '../core/state.js';
 import { api } from '../core/api.js';
 import { loadAll, loadMedia } from '../core/data.js';
 import { show, render } from '../core/router.js';
-import { val } from '../utils/helpers.js';
+import { val, showMsg } from '../utils/helpers.js';
 
 export function renderPosts() {
   dom.content.innerHTML = `
@@ -232,19 +232,28 @@ export async function savePost() {
     videoUrl: document.getElementById('f-videoUrl') ? document.getElementById('f-videoUrl').value : (state.editingPost.videoUrl || ''),
     originalSlug: state.editingPost.originalSlug,
   };
-  await api('/api/posts', { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } });
-  await loadAll();
 
-  state.editingPost = state.posts.find(p => p.slug === data.slug) || data;
-  state.editingPost.originalSlug = data.slug;
-  renderPostEdit();
+  try {
+    const result = await api('/api/posts', { method: 'POST', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } });
+    if (!result.ok && result.error) {
+      showMsg(result.error, true);
+      return;
+    }
+    await loadAll();
 
-  const btn = document.querySelector('button[onclick="savePost()"]');
-  if (btn) {
-    const origText = btn.innerHTML;
-    btn.innerHTML = 'ذخیره شد ✓';
-    btn.classList.add('ok');
-    setTimeout(() => { btn.innerHTML = origText; btn.classList.remove('ok'); }, 2000);
+    state.editingPost = state.posts.find(p => p.slug === data.slug) || data;
+    state.editingPost.originalSlug = data.slug;
+    renderPostEdit();
+
+    const btn = document.querySelector('button[onclick="savePost()"]');
+    if (btn) {
+      const origText = btn.innerHTML;
+      btn.innerHTML = 'ذخیره شد ✓';
+      btn.classList.add('ok');
+      setTimeout(() => { btn.innerHTML = origText; btn.classList.remove('ok'); }, 2000);
+    }
+  } catch (e) {
+    showMsg('خطا در ارتباط با سرور هنگام ذخیره نوشته', true);
   }
 }
 
