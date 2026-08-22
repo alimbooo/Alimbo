@@ -160,6 +160,13 @@ const BACKUP_SKIP = new Set([
   'backup-update-', // prefix match
 ]);
 
+// Local-only environment files that must survive updates and rollbacks
+function isLocalEnvFile(name) {
+  if (name === '.env') return true;
+  if (name.startsWith('.env') && name.endsWith('.local')) return true;
+  return false;
+}
+
 function readGitignorePatterns() {
   const patterns = [];
   const gitignorePath = path.join(root, '.gitignore');
@@ -204,38 +211,45 @@ function shouldSkipBackup(name, isDir, gitignorePatterns) {
   if (BACKUP_SKIP.has(name)) return true;
   // Skip any backup directories from previous runs
   if (name.startsWith('backup-update-')) return true;
+  // Local env files are always preserved, even though .gitignore excludes them
+  if (isLocalEnvFile(name)) return false;
   if (isSkippedByGitignore(name, isDir, gitignorePatterns)) return true;
   return false;
 }
 
-function fullBackup(backupDir, sendEvent) {
-  const gitignorePatterns = readGitignorePatterns();
-  if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
-
-  const entries = fs.readdirSync(root);
+// Recursively copy a tree, applying backup exclusions at every level
+function copyTreeWithFilter(srcDir, destDir, gitignorePatterns) {
+  if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+  const entries = fs.readdirSync(srcDir);
   for (const entry of entries) {
-    const fullPath = path.join(root, entry);
+    const src = path.join(srcDir, entry);
     let stat;
-    try { stat = fs.statSync(fullPath); } catch { continue; }
-    if (shouldSkipBackup(entry, stat.isDirectory(), gitignorePatterns)) continue;
-
-    const dest = path.join(backupDir, entry);
-    if (stat.isDirectory()) {
-      fs.cpSync(fullPath, dest, { recursive: true });
+    try { stat = fs.statSync(src); } catch { continue; }
+    const isDir = stat.isDirectory();
+    if (shouldSkipBackup(entry, isDir, gitignorePatterns)) continue;
+    const dest = path.join(destDir, entry);
+    if (isDir) {
+      copyTreeWithFilter(src, dest, gitignorePatterns);
     } else {
-      fs.copyFileSync(fullPath, dest);
+      fs.copyFileSync(src, dest);
     }
   }
+}
+
+function fullBackup(backupDir, sendEvent) {
+  const gitignorePatterns = readGitignorePatterns();
+  copyTreeWithFilter(root, backupDir, gitignorePatterns);
 }
 
 function fullRestore(backupDir, sendEvent) {
   if (!fs.existsSync(backupDir)) throw new Error('Backup directory not found: ' + backupDir);
 
   const entries = fs.readdirSync(backupDir);
-  // Remove current project files (except .git, node_modules, .next)
+  // Remove current project files (except .git and node_modules).
+  // .next is removed so stale build artifacts from the failed/new version cannot remain.
   const currentEntries = fs.readdirSync(root);
   for (const entry of currentEntries) {
-    if (entry === '.git' || entry === 'node_modules' || entry === '.next') continue;
+    if (entry === '.git' || entry === 'node_modules') continue;
     if (entry.startsWith('backup-update-')) continue;
     try {
       fs.rmSync(path.join(root, entry), { recursive: true, force: true });
@@ -268,13 +282,28 @@ function restoreContentOnly(backupDir) {
   }
 }
 
+// Restore local env files (e.g. .env, .env.local) from the backup after an update
+function restoreLocalFiles(backupDir) {
+  const entries = fs.readdirSync(backupDir);
+  for (const entry of entries) {
+    if (!isLocalEnvFile(entry)) continue;
+    const src = path.join(backupDir, entry);
+    if (!fs.existsSync(src)) continue;
+    if (fs.statSync(src).isDirectory()) continue;
+    fs.copyFileSync(src, path.join(root, entry));
+  }
+}
+
 function depsChanged(oldBackupDir) {
-  const oldPkg = path.join(oldBackupDir, 'package-lock.json');
-  const newPkg = path.join(root, 'package-lock.json');
-  if (!fs.existsSync(oldPkg) || !fs.existsSync(newPkg)) return true;
-  const oldContent = fs.readFileSync(oldPkg, 'utf8');
-  const newContent = fs.readFileSync(newPkg, 'utf8');
-  return oldContent !== newContent;
+  for (const manifest of ['package.json', 'package-lock.json']) {
+    const oldManifest = path.join(oldBackupDir, manifest);
+    const newManifest = path.join(root, manifest);
+    if (!fs.existsSync(oldManifest) || !fs.existsSync(newManifest)) return true;
+    const oldContent = fs.readFileSync(oldManifest, 'utf8');
+    const newContent = fs.readFileSync(newManifest, 'utf8');
+    if (oldContent !== newContent) return true;
+  }
+  return false;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -752,6 +781,7 @@ const server = http.createServer(async (req, res) => {
           // --- Step: restoring user content ---
           sse('step', { step: 'restore_content', status: 'running' });
           restoreContentOnly(backupDir);
+          restoreLocalFiles(backupDir);
           sse('step', { step: 'restore_content', status: 'done' });
 
           // --- Step: installing dependencies ---
@@ -816,6 +846,11 @@ const server = http.createServer(async (req, res) => {
 
               // Restore dependencies
               await runCommandAsync('npm', ['i'], { cwd: root });
+
+              // Rollback succeeded — clean up the backup
+              if (fs.existsSync(backupDir)) {
+                fs.rmSync(backupDir, { recursive: true, force: true });
+              }
 
               sse('action', { action: 'rollback_done', success: true });
             } catch (rollbackErr) {
