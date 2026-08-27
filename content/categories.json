@@ -65,6 +65,12 @@
       "slug": "Youtube-Thumbnail",
       "parent": "Image",
       "sort": 999
+    },
+    {
+      "name": "اجرا جلوی دوربین",
+      "slug": "In-Front-Of-Camera",
+      "parent": "video",
+      "sort": 999
     }
   ],
   "posts": [
