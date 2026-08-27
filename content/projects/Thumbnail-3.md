@@ -20,5 +20,3 @@ images:
 ---
 عکس تامنیل با هوش مصنوعی لوکال فلاکس ساخته شده و در اخر یکسری اصلاحات و ادیت با فتوشاپ.
 
-ویدیو کامل:
-<iframe width="560" height="315" src="https://www.youtube.com/embed/q5A7phDsfGw?si=IDILtOAf8ELOMylT" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
