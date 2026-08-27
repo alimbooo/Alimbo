@@ -7,52 +7,64 @@
       "sort": 1
     },
     {
-      "name": "موشن",
-      "slug": "motion",
-      "parent": null,
-      "sort": 2
+      "name": "هوش مصنوعی",
+      "slug": "Ai-Video",
+      "parent": "video",
+      "sort": 999
     },
     {
-      "name": "تصویربرداری",
+      "name": "تصویر",
+      "slug": "Image",
+      "parent": null,
+      "sort": 999
+    },
+    {
+      "name": "عکاسی و فیلم‌برداری",
+      "slug": "Photography-Videography",
+      "parent": null,
+      "sort": 999
+    },
+    {
+      "name": "ادیت و تدوین",
+      "slug": "Video-Edit",
+      "parent": "video",
+      "sort": 999
+    },
+    {
+      "name": "هوش مصنوعی",
+      "slug": "Ai-Image",
+      "parent": "Image",
+      "sort": 999
+    },
+    {
+      "name": "ادیت",
+      "slug": "Image-Edit",
+      "parent": "Image",
+      "sort": 999
+    },
+    {
+      "name": "عکاسی",
       "slug": "Photography",
-      "parent": null,
-      "sort": 3
+      "parent": "Photography-Videography",
+      "sort": 999
     },
     {
-      "name": "لوگو موشن",
-      "slug": "Logo-Animation",
-      "parent": "motion",
-      "sort": 4
+      "name": "فیلم برداری",
+      "slug": "Videography",
+      "parent": "Photography-Videography",
+      "sort": 999
     },
     {
-      "name": "تایپوگرافی",
-      "slug": "Typography",
-      "parent": "motion",
-      "sort": 5
+      "name": "جلد کتاب",
+      "slug": "Book-Covers",
+      "parent": "Image",
+      "sort": 999
     },
     {
-      "name": "پرتره",
-      "slug": "Portrait",
-      "parent": "Photography",
-      "sort": 6
-    },
-    {
-      "name": "محصول",
-      "slug": "Product",
-      "parent": "Photography",
-      "sort": 7
-    },
-    {
-      "name": "سوشال مدیا",
-      "slug": "Social-Media",
-      "parent": "video",
-      "sort": 8
-    },
-    {
-      "name": "یوتیوب",
-      "slug": "youtube",
-      "parent": "video",
-      "sort": 9
+      "name": "تامنیل یوتیوب",
+      "slug": "Youtube-Thumbnail",
+      "parent": "Image",
+      "sort": 999
     }
   ],
   "posts": [
