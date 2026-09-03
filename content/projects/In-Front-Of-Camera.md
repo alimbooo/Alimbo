@@ -2,7 +2,7 @@
 title: اجرا ویدیو به انگلیسی درباره کتاب ادواردو
 slug: In-Front-Of-Camera
 description: ویدیو به انگلیسی درباره کتاب ادواردو از انتشارات نخل سبز
-cover: /media/789789089.jpg
+cover: /media/123243.jpg
 year: ''
 date: ''
 client: نخل سبز
