@@ -30,134 +30,7 @@ function renderMarkdown(markdown: string) {
   });
 }
 
-function extractEmbedSrc(code: string): string | null {
-  if (!code) return null;
-  const trimmed = code.trim();
-  // If user pasted a clean URL directly
-  if (!trimmed.includes('<') && (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('//'))) {
-    return trimmed.startsWith('//') ? 'https:' + trimmed : trimmed;
-  }
-  // Try to match src attribute from <iframe ... src="...">
-  const iframeSrcMatch = trimmed.match(/<iframe[^>]+src=["']([^"']+)["']/i);
-  if (iframeSrcMatch && iframeSrcMatch[1]) {
-    let src = iframeSrcMatch[1];
-    return src.startsWith('//') ? 'https:' + src : src;
-  }
-  // Try to match src attribute from <embed ... src="...">
-  const embedSrcMatch = trimmed.match(/<embed[^>]+src=["']([^"']+)["']/i);
-  if (embedSrcMatch && embedSrcMatch[1]) {
-    let src = embedSrcMatch[1];
-    return src.startsWith('//') ? 'https:' + src : src;
-  }
-  return null;
-}
-
-function normalizeVideoUrl(rawUrl: string): string {
-  let cleaned = rawUrl.trim();
-  try {
-    const parsed = new URL(cleaned);
-    // YouTube
-    if (parsed.hostname === 'youtu.be') {
-      const id = parsed.pathname.slice(1);
-      if (id) return `https://www.youtube.com/embed/${id}`;
-    } else if (parsed.hostname.includes('youtube.com')) {
-      if (parsed.pathname.startsWith('/watch')) {
-        const id = parsed.searchParams.get('v');
-        if (id) return `https://www.youtube.com/embed/${id}`;
-      } else if (parsed.pathname.startsWith('/shorts/')) {
-        const id = parsed.pathname.slice(8);
-        if (id) return `https://www.youtube.com/embed/${id}`;
-      }
-    }
-    // Aparat: convert aparat.com/v/ID to aparat.com/video/video/embed/videohash/ID/vt/frame
-    if (parsed.hostname.includes('aparat.com') && parsed.pathname.startsWith('/v/')) {
-      const id = parsed.pathname.slice(3).replace(/\/.*$/, '');
-      if (id) return `https://www.aparat.com/video/video/embed/videohash/${id}/vt/frame`;
-    }
-    // Google Drive: convert /view to /preview
-    if (parsed.hostname.includes('drive.google.com') && parsed.pathname.includes('/view')) {
-      return cleaned.replace(/\/view(\?.*)?$/, '/preview');
-    }
-  } catch {}
-  return cleaned;
-}
-
-function parseVideoUrl(url: string, source: string, title: string, orientation: 'horizontal' | 'vertical' = 'horizontal') {
-  if (!url) return null;
-  const isVertical = orientation === 'vertical';
-
-  const wrapperClass = isVertical ? 'flex justify-center w-full my-4' : 'w-full my-4';
-  const playerClass = isVertical
-    ? 'relative aspect-[9/16] w-full max-w-[380px] rounded-2xl border border-[var(--border)] shadow-md overflow-hidden bg-black'
-    : 'relative aspect-video w-full rounded-2xl border border-[var(--border)] shadow-md overflow-hidden bg-black';
-
-  // 1. If source is embed or url contains an HTML tag
-  if (source === 'embed' || url.trim().startsWith('<')) {
-    const extractedSrc = extractEmbedSrc(url);
-    if (extractedSrc) {
-      const finalSrc = normalizeVideoUrl(extractedSrc);
-      return (
-        <div className={wrapperClass}>
-          <div className={playerClass}>
-            <iframe
-              title={`ویدیوی ${title}`}
-              src={finalSrc}
-              className="absolute inset-0 h-full w-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              loading="lazy"
-            />
-          </div>
-        </div>
-      );
-    }
-    // Fallback if no iframe src found: render inside fully pinned responsive container
-    return (
-      <div className={wrapperClass}>
-        <div className={playerClass}>
-          <div
-            className="absolute inset-0 h-full w-full overflow-hidden flex items-center justify-center [&_*]:!max-w-full [&_*]:!max-h-full [&_iframe]:!absolute [&_iframe]:!inset-0 [&_iframe]:!w-full [&_iframe]:!h-full [&_iframe]:!border-0 [&_video]:!absolute [&_video]:!inset-0 [&_video]:!w-full [&_video]:!h-full [&_video]:!object-contain [&_div]:!w-full [&_div]:!h-full [&_div]:!p-0 [&_div]:!m-0 [&_span]:!hidden"
-            dangerouslySetInnerHTML={{ __html: url }}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  // 2. If source is host (local or direct video file)
-  if (source === 'host') {
-    return (
-      <div className={wrapperClass}>
-        <div className={playerClass}>
-          <video
-            src={assetUrl(url)}
-            title={`ویدیوی ${title}`}
-            controls
-            playsInline
-            className="absolute inset-0 h-full w-full object-contain"
-          />
-        </div>
-      </div>
-    );
-  }
-
-  // 3. YouTube or Aparat or default URL
-  const normalizedUrl = normalizeVideoUrl(url);
-  return (
-    <div className={wrapperClass}>
-      <div className={playerClass}>
-        <iframe
-          title={`ویدیوی ${title}`}
-          src={assetUrl(normalizedUrl)}
-          className="absolute inset-0 h-full w-full border-0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          loading="lazy"
-        />
-      </div>
-    </div>
-  );
-}
+import { VideoPlayer } from '@/components/video-player';
 
 export function generateStaticParams() {
   return getProjects().map((project) => ({ slug: project.slug }));
@@ -180,7 +53,15 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           <div>
             {project.template !== 'video' && project.images && project.images.length > 0 && <ProjectGallery images={project.images} />}
             {project.template !== 'video' && (!project.images || project.images.length === 0) && project.cover && <img src={assetUrl(project.cover)} alt={`تصویر پروژه ${project.title}`} className="w-full rounded-2xl border border-[var(--border)] shadow-sm" />}
-            {project.template === 'video' && project.videoUrl && parseVideoUrl(project.videoUrl, project.videoSource || 'host', project.title, project.videoOrientation)}
+            {project.template === 'video' && project.videoUrl && (
+              <VideoPlayer
+                url={project.videoUrl}
+                source={project.videoSource || 'host'}
+                title={project.title}
+                orientation={project.videoOrientation}
+                poster={project.cover}
+              />
+            )}
             <div className="prose mt-10 max-w-none">{renderMarkdown(project.content)}</div>
           </div>
 
