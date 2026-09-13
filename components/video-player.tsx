@@ -13,12 +13,9 @@ export interface VideoPlayerProps {
 
 /**
  * Extracts a Google Drive file ID from various formats:
- * - /file/d/{id}/preview
- * - /file/d/{id}/view
- * - /file/d/{id}
+ * - /file/d/{id}/preview or /file/d/{id}/view
  * - ?id={id} or &id={id}
- * - /open?id={id} or /uc?id={id}
- * - Full <iframe src="..."> code
+ * - Full <iframe src="..."> code containing drive.google.com
  */
 export function extractGoogleDriveId(input: string): string | null {
   if (!input) return null;
@@ -27,9 +24,6 @@ export function extractGoogleDriveId(input: string): string | null {
 
   const matchId = input.match(/[?&]id=([a-zA-Z0-9_-]+)/i);
   if (matchId && matchId[1]) return matchId[1];
-
-  const matchOpen = input.match(/\/(?:open|uc)\?(?:.*&)?id=([a-zA-Z0-9_-]+)/i);
-  if (matchOpen && matchOpen[1]) return matchOpen[1];
 
   return null;
 }
@@ -87,8 +81,43 @@ export function normalizeVideoUrl(rawUrl: string): string {
   return cleaned;
 }
 
+/**
+ * Google Drive Poster Overlay:
+ * Shows the project cover image with a play button.
+ * When user taps play, the overlay hides and the iframe becomes visible/active.
+ * This avoids showing Google Drive's ugly center controls overlay on initial load.
+ */
+function GoogleDrivePosterOverlay({ poster, title, onPlay }: { poster?: string; title: string; onPlay: () => void }) {
+  return (
+    <div
+      className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer bg-black"
+      onClick={onPlay}
+      role="button"
+      aria-label={`پخش ویدیوی ${title}`}
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onPlay(); }}
+    >
+      {poster && (
+        <img
+          src={assetUrl(poster)}
+          alt={title}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      )}
+      {/* Dark gradient overlay for better button visibility */}
+      <div className="absolute inset-0 bg-black/30" />
+      {/* Play button */}
+      <div className="relative z-10 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/90 shadow-xl backdrop-blur-sm transition-transform hover:scale-110 active:scale-95">
+        <svg viewBox="0 0 24 24" className="w-7 h-7 md:w-9 md:h-9 text-gray-900 ml-1" fill="currentColor">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 export function VideoPlayer({ url, source = 'host', title, orientation = 'horizontal', poster }: VideoPlayerProps) {
-  const [driveStreamFailed, setDriveStreamFailed] = useState(false);
+  const [driveActivated, setDriveActivated] = useState(false);
 
   if (!url) return null;
 
@@ -100,43 +129,41 @@ export function VideoPlayer({ url, source = 'host', title, orientation = 'horizo
 
   const driveId = extractGoogleDriveId(url);
 
-  // 1. Google Drive direct stream (works for any embed or direct URL containing drive ID)
-  // Renders native HTML5 <video> with bottom-aligned mobile controls, zero center clutter,
-  // perfect edge-to-edge fitting without top-bar clipping.
-  if (driveId && !driveStreamFailed) {
-    const directStreamUrl = `https://drive.usercontent.google.com/download?id=${driveId}&export=download`;
-    return (
-      <div className={wrapperClass}>
-        <div className={playerClass}>
-          <video
-            key={driveId}
-            src={directStreamUrl}
-            title={`ویدیوی ${title}`}
-            controls
-            playsInline
-            preload="metadata"
-            poster={poster ? assetUrl(poster) : undefined}
-            onError={() => {
-              // Graceful fallback to Google Drive preview iframe if direct streaming fails
-              setDriveStreamFailed(true);
-            }}
-            className="absolute inset-0 h-full w-full object-contain bg-black"
-          />
-        </div>
-      </div>
-    );
-  }
+  // 1. Google Drive embed — poster overlay + cropped iframe
+  // Google Drive blocks direct <video> streaming from browsers (403 on Sec-Fetch-Dest: video).
+  // So we use the /preview iframe, but with two key improvements:
+  //   a) Poster overlay: shows clean cover image + play button initially (no Drive controls visible)
+  //   b) CSS crop: pushes iframe up by 48px to hide Google Drive's top toolbar bar
+  if (driveId) {
+    const previewUrl = `https://drive.google.com/file/d/${driveId}/preview`;
 
-  // 2. Google Drive iframe fallback
-  if (driveId && driveStreamFailed) {
-    const fallbackPreviewUrl = `https://drive.google.com/file/d/${driveId}/preview`;
+    // Google Drive top bar is 48px. We push the iframe up and make it taller to crop it out.
+    // This makes the video content fill the visible area properly.
+    const DRIVE_TOPBAR_HEIGHT = 48;
+
     return (
       <div className={wrapperClass}>
         <div className={playerClass}>
+          {/* Poster overlay — shown initially, hides Google Drive's controls */}
+          {!driveActivated && poster && (
+            <GoogleDrivePosterOverlay
+              poster={poster}
+              title={title}
+              onPlay={() => setDriveActivated(true)}
+            />
+          )}
+          {/* If no poster, or after user taps play, show the iframe */}
+          {/* Even before activation we render the iframe (hidden behind poster) so it preloads */}
           <iframe
             title={`ویدیوی ${title}`}
-            src={fallbackPreviewUrl}
-            className="absolute inset-0 h-full w-full border-0"
+            src={previewUrl}
+            className="absolute border-0"
+            style={{
+              left: 0,
+              top: `-${DRIVE_TOPBAR_HEIGHT}px`,
+              width: '100%',
+              height: `calc(100% + ${DRIVE_TOPBAR_HEIGHT}px)`,
+            }}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
             loading="lazy"
@@ -146,7 +173,7 @@ export function VideoPlayer({ url, source = 'host', title, orientation = 'horizo
     );
   }
 
-  // 3. Local or direct video file (host)
+  // 2. Local or direct video file (host)
   if (source === 'host') {
     return (
       <div className={wrapperClass}>
@@ -165,7 +192,7 @@ export function VideoPlayer({ url, source = 'host', title, orientation = 'horizo
     );
   }
 
-  // 4. Other Embed code or HTML snippet (YouTube, Aparat, custom iframe)
+  // 3. Other embed code or HTML snippet (non-Drive: YouTube, Aparat, custom iframe)
   if (source === 'embed' || url.trim().startsWith('<')) {
     const extractedSrc = extractEmbedSrc(url);
     if (extractedSrc) {
@@ -185,6 +212,7 @@ export function VideoPlayer({ url, source = 'host', title, orientation = 'horizo
         </div>
       );
     }
+    // Fallback: render raw HTML inside responsive container
     return (
       <div className={wrapperClass}>
         <div className={playerClass}>
@@ -197,7 +225,7 @@ export function VideoPlayer({ url, source = 'host', title, orientation = 'horizo
     );
   }
 
-  // 5. Default URL (YouTube / Aparat / etc.)
+  // 4. Default URL (YouTube / Aparat / etc.)
   const normalizedUrl = normalizeVideoUrl(url);
   return (
     <div className={wrapperClass}>

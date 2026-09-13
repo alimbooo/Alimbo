@@ -133,9 +133,8 @@ export function renderProjectEdit() {
                 <option value="embed" ${p.videoSource === 'embed' ? 'selected' : ''}>کد امبد (Embed)</option>
               </select>
               ${p.videoSource === 'embed' ?
-                `<label style="margin-top:12px">کد امبد (گوگل درایو، یوتیوب، آپارات و ...)</label>
-                 <textarea id="f-videoUrl" style="min-height:90px;font-family:monospace;direction:ltr;text-align:left" onchange="state.editingProject.videoUrl=this.value">${p.videoUrl || ''}</textarea>
-                 <span style="font-size:11px;color:#94a3b8;display:block;margin-top:4px">می‌توانید کد iframe یا لینک گوگل درایو را قرار دهید. پلیر هوشمند آن را کاملاً فیت کادر و بدون دکمه‌های مزاحم وسط تصویر پخش می‌کند.</span>`
+                `<label style="margin-top:12px">کد امبد</label>
+                 <textarea id="f-videoUrl" style="min-height:90px;font-family:monospace;direction:ltr;text-align:left" onchange="state.editingProject.videoUrl=this.value">${p.videoUrl || ''}</textarea>`
                 :
                 `<label style="margin-top:12px">لینک ویدئو</label><input id="f-videoUrl" style="direction:ltr;text-align:left" value="${p.videoUrl || ''}" onchange="state.editingProject.videoUrl=this.value">`
               }
