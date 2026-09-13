@@ -33,7 +33,7 @@ export function renderProjects() {
   `;
 }
 
-export function newProject() { state.editingProject = { title: '', slug: '', description: '', content: '', cover: '', year: '', client: '', categories: [], images: [], template: 'image', videoUrl: '' }; show('project-edit', false); render(); }
+export function newProject() { state.editingProject = { title: '', slug: '', description: '', content: '', cover: '', year: '', client: '', categories: [], images: [], template: 'image', videoOrientation: 'horizontal', videoSource: 'host', videoUrl: '' }; show('project-edit', false); render(); }
 
 export function editProject(slug) {
   const p = state.projects.find((p) => p.slug === slug);
@@ -119,6 +119,12 @@ export function renderProjectEdit() {
               <option value="video" ${p.template === 'video' ? 'selected' : ''}>ویدئویی</option>
             </select>
             ${p.template === 'video' ? `
+              <label style="margin-top:12px">کادر ویدئو (نسبت تصویر)</label>
+              <select id="f-videoOrientation" onchange="onVideoOrientationChange(this.value)">
+                <option value="horizontal" ${p.videoOrientation !== 'vertical' ? 'selected' : ''}>افقی (16:9)</option>
+                <option value="vertical" ${p.videoOrientation === 'vertical' ? 'selected' : ''}>عمودی (9:16)</option>
+              </select>
+
               <label style="margin-top:12px">منبع ویدئو</label>
               <select id="f-videoSource" onchange="onVideoSourceChange(this.value)">
                 <option value="host" ${p.videoSource === 'host' || !p.videoSource ? 'selected' : ''}>هاست شخصی (MP4)</option>
@@ -190,6 +196,8 @@ export function syncEditingProject() {
   state.editingProject.client = val('f-client');
   state.editingProject.date = val('f-date');
   state.editingProject.content = val('f-content');
+  const videoOrientationEl = document.getElementById('f-videoOrientation');
+  if (videoOrientationEl) state.editingProject.videoOrientation = videoOrientationEl.value;
   const videoSourceEl = document.getElementById('f-videoSource');
   if (videoSourceEl) state.editingProject.videoSource = videoSourceEl.value;
   const videoUrlEl = document.getElementById('f-videoUrl');
@@ -209,6 +217,12 @@ export function onTemplateChange(value) {
   renderProjectEdit();
 }
 
+export function onVideoOrientationChange(value) {
+  syncEditingProject();
+  state.editingProject.videoOrientation = value;
+  renderProjectEdit();
+}
+
 export function onVideoSourceChange(value) {
   syncEditingProject();
   state.editingProject.videoSource = value;
@@ -216,6 +230,7 @@ export function onVideoSourceChange(value) {
 }
 
 export async function saveProject() {
+  const videoOrientationEl = document.getElementById('f-videoOrientation');
   const videoSourceEl = document.getElementById('f-videoSource');
   const videoUrlEl = document.getElementById('f-videoUrl');
   const data = {
@@ -223,6 +238,7 @@ export async function saveProject() {
     title: val('f-title'), slug: val('f-slug'), description: val('f-description'), cover: val('f-cover'),
     year: val('f-year'), client: val('f-client'), date: val('f-date'),
     template: val('f-template'),
+    videoOrientation: videoOrientationEl ? videoOrientationEl.value : (state.editingProject.videoOrientation || 'horizontal'),
     videoSource: videoSourceEl ? videoSourceEl.value : (state.editingProject.videoSource || 'host'),
     videoUrl: videoUrlEl ? videoUrlEl.value : (state.editingProject.videoUrl || ''),
     content: val('f-content'), images: state.editingProject.images || [], originalSlug: state.editingProject.originalSlug,

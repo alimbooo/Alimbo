@@ -62,6 +62,7 @@ function validate() {
       if (!d.title) fail(`${file}: title is required`);
       if (d.categories) for (const c of d.categories) if (!projectCatSlugs.has(c)) fail(`${file}: invalid category "${c}"`);
       if (d.videoMode && !['youtube', 'embed', 'none'].includes(d.videoMode)) fail(`${file}: invalid videoMode`);
+      if (d.videoOrientation && !['horizontal', 'vertical'].includes(d.videoOrientation)) fail(`${file}: invalid videoOrientation`);
       if (d.cover && !fs.existsSync(path.join(root, 'public', d.cover.replace(/^\//, '')))) fail(`${file}: cover image not found: ${d.cover}`);
     }
   }
@@ -76,6 +77,7 @@ function validate() {
       if (!d.title) fail(`${file}: title is required`);
       if (d.categories) for (const c of d.categories) if (!postCatSlugs.has(c)) fail(`${file}: invalid post category "${c}"`);
       if (d.videoMode && !['youtube', 'embed', 'none'].includes(d.videoMode)) fail(`${file}: invalid videoMode`);
+      if (d.videoOrientation && !['horizontal', 'vertical'].includes(d.videoOrientation)) fail(`${file}: invalid videoOrientation`);
       if (d.cover && !fs.existsSync(path.join(root, 'public', d.cover.replace(/^\//, '')))) fail(`${file}: cover image not found: ${d.cover}`);
     }
   }

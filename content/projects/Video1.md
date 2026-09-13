@@ -11,10 +11,9 @@ categories:
   - video
   - Video-Edit
 template: video
+videoOrientation: vertical
 videoSource: embed
-videoUrl: ''
+videoUrl: '<iframe src="https://drive.google.com/file/d/1IPjAllI-nSsf3oGP1aCFg1G-cA1h887y/preview" width="360" height="640"></iframe>'
 images: []
 ---
-<iframe src="https://drive.google.com/file/d/1IPjAllI-nSsf3oGP1aCFg1G-cA1h887y/preview" width="360" height="640"></iframe>
-
 ادیت ویدیو با پریمیر و فیلمورا انجام شده

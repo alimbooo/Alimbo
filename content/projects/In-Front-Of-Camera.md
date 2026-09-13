@@ -11,8 +11,9 @@ categories:
   - video
   - In-Front-Of-Camera
 template: video
+videoOrientation: vertical
 videoSource: embed
-videoUrl: ''
+videoUrl: '<iframe src="https://drive.google.com/file/d/15m5zXetB8CQLFQ3Ok0yIS8HUhtZqDOPR/preview" width="360" height="640"></iframe>'
 images: []
 ---
-<iframe src="https://drive.google.com/file/d/15m5zXetB8CQLFQ3Ok0yIS8HUhtZqDOPR/preview" width="360" height="640"></iframe>
+ویدیو به انگلیسی درباره کتاب ادواردو از انتشارات نخل سبز

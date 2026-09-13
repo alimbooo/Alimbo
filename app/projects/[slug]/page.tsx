@@ -22,25 +22,48 @@ function renderMarkdown(markdown: string) {
   });
 }
 
-function parseVideoUrl(url: string, source: string, title: string) {
+function parseVideoUrl(url: string, source: string, title: string, orientation: 'horizontal' | 'vertical' = 'horizontal') {
   if (!url) return null;
+  const isVertical = orientation === 'vertical';
+
+  const wrapperClass = isVertical ? 'flex justify-center w-full my-2' : 'w-full my-2';
+  const playerClass = isVertical
+    ? 'aspect-[9/16] w-full max-w-[380px] rounded-2xl border border-[var(--border)] shadow-md overflow-hidden bg-black'
+    : 'aspect-video w-full rounded-2xl border border-[var(--border)] shadow-md overflow-hidden bg-black';
 
   if (source === 'embed') {
+    if (url.includes('<')) {
+      return (
+        <div className={wrapperClass}>
+          <div
+            className={`${playerClass} [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0 [&_iframe]:block [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0`}
+            dangerouslySetInnerHTML={{ __html: url }}
+          />
+        </div>
+      );
+    }
     return (
-      <div
-        className="aspect-video w-full rounded-2xl border border-[var(--border)] shadow-sm overflow-hidden"
-        dangerouslySetInnerHTML={{ __html: url }}
-      />
+      <div className={wrapperClass}>
+        <iframe
+          title={`ویدیوی ${title}`}
+          src={assetUrl(url)}
+          className={playerClass}
+          allowFullScreen
+        />
+      </div>
     );
   }
 
   if (source === 'host') {
     return (
-      <video src={assetUrl(url)}
-        title={`ویدیوی ${title}`}
-        controls
-        className="aspect-video w-full rounded-2xl border border-[var(--border)]"
-      />
+      <div className={wrapperClass}>
+        <video
+          src={assetUrl(url)}
+          title={`ویدیوی ${title}`}
+          controls
+          className={`${playerClass} object-contain`}
+        />
+      </div>
     );
   }
 
@@ -60,21 +83,27 @@ function parseVideoUrl(url: string, source: string, title: string) {
     const finalUrl = youtubeId ? `https://www.youtube.com/embed/${youtubeId}` : url;
 
     return (
-      <iframe
-        title={`ویدیوی ${title}`}
-        src={finalUrl}
-        className="aspect-video w-full rounded-2xl border border-[var(--border)]"
-        allowFullScreen
-      />
+      <div className={wrapperClass}>
+        <iframe
+          title={`ویدیوی ${title}`}
+          src={finalUrl}
+          className={playerClass}
+          allowFullScreen
+        />
+      </div>
     );
   }
 
   // Default / aparat
   return (
-    <iframe title={`ویدیوی ${title}`} src={assetUrl(url)}
-      className="aspect-video w-full rounded-2xl border border-[var(--border)]"
-      allowFullScreen
-    />
+    <div className={wrapperClass}>
+      <iframe
+        title={`ویدیوی ${title}`}
+        src={assetUrl(url)}
+        className={playerClass}
+        allowFullScreen
+      />
+    </div>
   );
 }
 
@@ -99,7 +128,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           <div>
             {project.template !== 'video' && project.images && project.images.length > 0 && <ProjectGallery images={project.images} />}
             {project.template !== 'video' && (!project.images || project.images.length === 0) && project.cover && <img src={assetUrl(project.cover)} alt={`تصویر پروژه ${project.title}`} className="w-full rounded-2xl border border-[var(--border)] shadow-sm" />}
-            {project.template === 'video' && project.videoUrl && parseVideoUrl(project.videoUrl, project.videoSource || 'host', project.title)}
+            {project.template === 'video' && project.videoUrl && parseVideoUrl(project.videoUrl, project.videoSource || 'host', project.title, project.videoOrientation)}
             <div className="prose mt-10 max-w-none">{renderMarkdown(project.content)}</div>
           </div>
 
@@ -137,9 +166,14 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   <dt className="text-[var(--muted)] text-xs mb-1">دسته‌ها</dt>
                   <dd className="flex flex-wrap gap-1.5 mt-1">
                     {project.categories && project.categories.length > 0 ? project.categories.map((slug) => (
-                      <span className="tag text-xs" key={slug}>
+                      <Link
+                        key={slug}
+                        href={`/projects?category=${encodeURIComponent(slug)}`}
+                        className="tag text-xs hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all cursor-pointer"
+                        title={`مشاهده پروژه‌های دسته ${categories.find((cat) => cat.slug === slug)?.name || slug}`}
+                      >
                         {categories.find((cat) => cat.slug === slug)?.name || slug}
-                      </span>
+                      </Link>
                     )) : '—'}
                   </dd>
                 </div>

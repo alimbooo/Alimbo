@@ -33,7 +33,7 @@ export function renderPosts() {
   `;
 }
 
-export function newPost() { state.editingPost = { title: '', slug: '', description: '', content: '', cover: '', categories: [], images: [], template: 'image', videoUrl: '' }; show('post-edit', false); render(); }
+export function newPost() { state.editingPost = { title: '', slug: '', description: '', content: '', cover: '', categories: [], images: [], template: 'image', videoOrientation: 'horizontal', videoUrl: '' }; show('post-edit', false); render(); }
 
 export function editPost(slug) {
   const p = state.posts.find((p) => p.slug === slug);
@@ -133,6 +133,12 @@ export function renderPostEdit() {
               <option value="video" ${p.template === 'video' ? 'selected' : ''}>ویدئویی</option>
             </select>
             ${p.template === 'video' ? `
+              <label style="margin-top:12px">کادر ویدئو (نسبت تصویر)</label>
+              <select id="f-videoOrientation" onchange="onPostVideoOrientationChange(this.value)">
+                <option value="horizontal" ${p.videoOrientation !== 'vertical' ? 'selected' : ''}>افقی (16:9)</option>
+                <option value="vertical" ${p.videoOrientation === 'vertical' ? 'selected' : ''}>عمودی (9:16)</option>
+              </select>
+
               <label style="margin-top:12px">منبع ویدئو</label>
               <select id="f-videoSource" onchange="onPostVideoSourceChange(this.value)">
                 <option value="host" ${p.videoSource === 'host' || !p.videoSource ? 'selected' : ''}>هاست شخصی (MP4)</option>
@@ -204,6 +210,8 @@ export function syncEditingPost() {
   state.editingPost.date = val('f-date');
   state.editingPost.cover = val('f-cover');
   state.editingPost.content = val('f-content');
+  const videoOrientationEl = document.getElementById('f-videoOrientation');
+  if (videoOrientationEl) state.editingPost.videoOrientation = videoOrientationEl.value;
   const videoSourceEl = document.getElementById('f-videoSource');
   if (videoSourceEl) state.editingPost.videoSource = videoSourceEl.value;
   const videoUrlEl = document.getElementById('f-videoUrl');
@@ -221,6 +229,12 @@ export function togglePostCat(slug, checked) {
   renderPostEdit();
 }
 
+export function onPostVideoOrientationChange(value) {
+  syncEditingPost();
+  state.editingPost.videoOrientation = value;
+  renderPostEdit();
+}
+
 export async function savePost() {
   const data = {
     ...state.editingPost,
@@ -228,6 +242,7 @@ export async function savePost() {
     content: val('f-content'),
     images: state.editingPost.images || [],
     template: val('f-template') || 'image',
+    videoOrientation: document.getElementById('f-videoOrientation') ? document.getElementById('f-videoOrientation').value : (state.editingPost.videoOrientation || 'horizontal'),
     videoSource: document.getElementById('f-videoSource') ? document.getElementById('f-videoSource').value : (state.editingPost.videoSource || 'host'),
     videoUrl: document.getElementById('f-videoUrl') ? document.getElementById('f-videoUrl').value : (state.editingPost.videoUrl || ''),
     originalSlug: state.editingPost.originalSlug,

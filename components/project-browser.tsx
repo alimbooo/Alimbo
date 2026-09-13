@@ -1,13 +1,43 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import type { Project, Category } from '@/lib/content';
 import { ProjectCard } from './project-card';
 
 export function ProjectBrowser({ projects, categories }: { projects: Project[]; categories: Category[] }) {
-  const [selected, setSelected] = useState('all');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const categoryParam = searchParams.get('category');
+
+  const [selected, setSelected] = useState(() => {
+    if (categoryParam) {
+      const matched = categories.find(c => c.slug.toLowerCase() === categoryParam.toLowerCase());
+      return matched ? matched.slug : categoryParam;
+    }
+    return 'all';
+  });
+
+  useEffect(() => {
+    if (categoryParam) {
+      const matched = categories.find(c => c.slug.toLowerCase() === categoryParam.toLowerCase());
+      setSelected(matched ? matched.slug : categoryParam);
+    } else {
+      setSelected('all');
+    }
+  }, [categoryParam, categories]);
+
+  const handleSelect = (categorySlug: string) => {
+    setSelected(categorySlug);
+    if (categorySlug === 'all') {
+      router.push('/projects', { scroll: false });
+    } else {
+      router.push(`/projects?category=${encodeURIComponent(categorySlug)}`, { scroll: false });
+    }
+  };
 
   const visible = useMemo(() => projects.filter((project) => {
-    return selected === 'all' || project.categories?.includes(selected);
+    if (selected === 'all') return true;
+    return project.categories?.some(c => c.toLowerCase() === selected.toLowerCase());
   }), [projects, selected]);
 
   // build category hierarchy
@@ -22,8 +52,8 @@ export function ProjectBrowser({ projects, categories }: { projects: Project[]; 
         <ul className="flex flex-col gap-2">
           <li>
             <button
-              onClick={() => setSelected('all')}
-              className={`w-full text-right px-3 py-2 rounded-lg transition-colors ${selected === 'all' ? 'bg-[var(--primary)] text-[var(--background)]' : 'hover:bg-[var(--background)]'}`}
+              onClick={() => handleSelect('all')}
+              className={`w-full text-right px-3 py-2 rounded-lg transition-colors cursor-pointer ${selected === 'all' ? 'bg-[var(--primary)] text-[var(--background)] font-bold' : 'hover:bg-[var(--background)]'}`}
             >
               همه پروژه‌ها
             </button>
@@ -31,8 +61,8 @@ export function ProjectBrowser({ projects, categories }: { projects: Project[]; 
           {parentCategories.map(parent => (
             <li key={parent.slug} className="flex flex-col gap-1">
               <button
-                onClick={() => setSelected(parent.slug)}
-                className={`w-full text-right px-3 py-2 rounded-lg transition-colors ${selected === parent.slug ? 'bg-[var(--primary)] text-[var(--background)]' : 'hover:bg-[var(--background)]'}`}
+                onClick={() => handleSelect(parent.slug)}
+                className={`w-full text-right px-3 py-2 rounded-lg transition-colors cursor-pointer ${selected.toLowerCase() === parent.slug.toLowerCase() ? 'bg-[var(--primary)] text-[var(--background)] font-bold' : 'hover:bg-[var(--background)]'}`}
               >
                 {parent.name}
               </button>
@@ -41,8 +71,8 @@ export function ProjectBrowser({ projects, categories }: { projects: Project[]; 
                   {getChildren(parent.slug).map(child => (
                     <li key={child.slug}>
                       <button
-                        onClick={() => setSelected(child.slug)}
-                        className={`w-full text-right px-3 py-1.5 rounded-lg text-sm transition-colors ${selected === child.slug ? 'bg-[var(--primary)] text-[var(--background)]' : 'hover:bg-[var(--background)] text-[var(--muted)] hover:text-[var(--foreground)]'}`}
+                        onClick={() => handleSelect(child.slug)}
+                        className={`w-full text-right px-3 py-1.5 rounded-lg text-sm transition-colors cursor-pointer ${selected.toLowerCase() === child.slug.toLowerCase() ? 'bg-[var(--primary)] text-[var(--background)] font-bold' : 'hover:bg-[var(--background)] text-[var(--muted)] hover:text-[var(--foreground)]'}`}
                       >
                         {child.name}
                       </button>

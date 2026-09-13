@@ -4,8 +4,8 @@ import { api } from './core/api.js';
 import { loadAll, loadFonts, loadMedia } from './core/data.js';
 import { show, render, toggleGroup } from './core/router.js';
 import { openMediaModal, closeMediaModal, selectMediaFromModal, uploadMediaFromModal, toggleMediaModalGalleryMode, confirmMediaSelection } from './components/media-modal.js';
-import { openProjectImagePicker, removeProjectImage, reorderProjectImage, newProject, editProject, duplicateProject, deleteProject, toggleProjectCat, saveProject, onTemplateChange, onVideoSourceChange, openCoverPickerModal as openProjectCoverPickerModal, selectCover as selectProjectCover } from './views/projects.js';
-import { openPostImagePicker, removePostImage, reorderPostImage, newPost, editPost, duplicatePost, deletePost, savePost, togglePostCat, onPostTemplateChange, onPostVideoSourceChange, openCoverPickerModal as openPostCoverPickerModal, selectCover as selectPostCover } from './views/posts.js';
+import { openProjectImagePicker, removeProjectImage, reorderProjectImage, newProject, editProject, duplicateProject, deleteProject, toggleProjectCat, saveProject, onTemplateChange, onVideoSourceChange, onVideoOrientationChange, openCoverPickerModal as openProjectCoverPickerModal, selectCover as selectProjectCover } from './views/projects.js';
+import { openPostImagePicker, removePostImage, reorderPostImage, newPost, editPost, duplicatePost, deletePost, savePost, togglePostCat, onPostTemplateChange, onPostVideoSourceChange, onPostVideoOrientationChange, openCoverPickerModal as openPostCoverPickerModal, selectCover as selectPostCover } from './views/posts.js';
 import { openCatModal, saveCat, deleteCat, switchCatType } from './views/categories.js';
 import { addExp, renderExp, addEdu, renderEdu, addLink, renderLinks, saveResume, cancelResume } from './views/resume.js';
 import { uploadMedia, deleteMedia, openLightbox } from './views/media.js';
@@ -46,6 +46,7 @@ window.toggleProjectCat = toggleProjectCat;
 window.saveProject = saveProject;
 window.onTemplateChange = onTemplateChange;
 window.onVideoSourceChange = onVideoSourceChange;
+window.onVideoOrientationChange = onVideoOrientationChange;
 
 
 window.newPost = newPost;
@@ -132,6 +133,7 @@ window.toggleProjectCat = toggleProjectCat;
 window.togglePostCat = togglePostCat;
 window.onPostTemplateChange = onPostTemplateChange;
 window.onPostVideoSourceChange = onPostVideoSourceChange;
+window.onPostVideoOrientationChange = onPostVideoOrientationChange;
 window.openPostImagePicker = openPostImagePicker;
 window.removePostImage = removePostImage;
 window.reorderPostImage = reorderPostImage;
