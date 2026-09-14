@@ -60,6 +60,9 @@ export async function deleteProject(slug) { if (!confirm('حذف شود؟')) ret
 export function renderProjectEdit() {
   const p = state.editingProject;
 
+  const projSection = (state.site.homeLayout || []).find(item => item.id === 'projects') || {};
+  const isSelectedForHome = p.slug && Array.isArray(projSection.selectedProjects) && projSection.selectedProjects.includes(p.slug);
+
   const selectedCats = state.categories.filter(c => c.type !== 'posts').filter(c => p.categories.includes(c.slug));
   const unselectedCats = state.categories.filter(c => c.type !== 'posts').filter(c => !p.categories.includes(c.slug));
 
@@ -77,7 +80,7 @@ export function renderProjectEdit() {
     <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">
       ${selectedCats.map(c => `<span class="tag">${c.name} <span style="cursor:pointer;color:#ef4444;margin-inline-start:4px" onclick="toggleProjectCat('${c.slug}', false)">×</span></span>`).join('')}
     </div>
-    <div style="display:flex;gap:4px;flex-wrap:wrap">
+    <div style="display:gap:4px;flex-wrap:wrap">
       ${unselectedCats.map(c => `<button class="btn sec" style="padding:4px 8px;font-size:0.8rem" onclick="toggleProjectCat('${c.slug}', true)">+ ${c.name}</button>`).join('')}
     </div>
   `;
@@ -110,6 +113,14 @@ export function renderProjectEdit() {
           <div class="row" style="margin-bottom:16px">
             <button class="btn" onclick="saveProject()" style="flex:1; justify-content:center">ذخیره</button>
             <button class="btn sec" onclick="show('projects')" style="flex:1; justify-content:center">انصراف</button>
+          </div>
+
+          <div style="margin-bottom:16px; padding:12px; background:var(--background); border:1px solid var(--border); border-radius:8px">
+            <label style="margin:0 0 4px 0; font-weight:bold; font-size:0.85rem; color:var(--foreground); display:flex; align-items:center; gap:8px; cursor:pointer">
+              <input type="checkbox" id="f-showOnHome" ${isSelectedForHome ? 'checked' : ''} style="width:auto; cursor:pointer">
+              نمایش در صفحه اصلی
+            </label>
+            <span style="font-size:0.75rem; color:var(--muted); display:block">قرارگیری در بخش پروژه‌های صفحه اول</span>
           </div>
 
           <div style="margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid #263243">
@@ -251,6 +262,24 @@ export async function saveProject() {
       showMsg(result.error, true);
       return;
     }
+    // Sync home layout selectedProjects
+    const showOnHomeEl = document.getElementById('f-showOnHome');
+    if (showOnHomeEl && state.site && state.site.homeLayout) {
+      let projSection = state.site.homeLayout.find(item => item.id === 'projects');
+      if (projSection) {
+        projSection.selectedProjects ||= [];
+        if (showOnHomeEl.checked) {
+          if (!projSection.selectedProjects.includes(data.slug)) projSection.selectedProjects.push(data.slug);
+        } else {
+          projSection.selectedProjects = projSection.selectedProjects.filter(s => s !== data.slug);
+        }
+        if (data.originalSlug && data.originalSlug !== data.slug) {
+          projSection.selectedProjects = projSection.selectedProjects.filter(s => s !== data.originalSlug);
+        }
+        await api('/api/site', { method: 'POST', body: JSON.stringify(state.site), headers: { 'Content-Type': 'application/json' } });
+      }
+    }
+
     await loadAll();
 
     state.editingProject = state.projects.find(p => p.slug === data.slug) || data;

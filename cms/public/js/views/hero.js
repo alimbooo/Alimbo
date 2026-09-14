@@ -3,6 +3,7 @@ import { api } from '../core/api.js';
 import { loadAll } from '../core/data.js';
 import { show } from '../core/router.js';
 import { val } from '../utils/helpers.js';
+import { icon } from '../icons.js';
 
 
 export function renderHero() {
@@ -143,6 +144,18 @@ export function renderHomeLayout() {
           <input type="number" min="2" max="4" value="${item.grid || 3}" onchange="let v=parseInt(this.value); if(v>=2 && v<=4) state.site.homeLayout[${i}].grid=v; else this.value=state.site.homeLayout[${i}].grid;">
         </div>
       </div>
+      ${item.id === 'projects' ? `
+        <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px">
+          <div>
+            <span style="font-size:0.85rem; color:var(--muted)">
+              ${item.mode === 'auto' ? 'حالت: انتخاب خودکار جدیدترین پروژه‌ها' : `${(item.selectedProjects || []).length} پروژه برای نمایش انتخاب شده است`}
+            </span>
+          </div>
+          <button class="btn sec" style="padding:6px 12px; font-size:0.8rem; display:flex; align-items:center; gap:6px" onclick="show('home-projects')">
+            ${icon('briefcase')} انتخاب و چیدمان پروژه‌های صفحه اصلی
+          </button>
+        </div>
+      ` : ''}
     </div>
   `}).join('');
 }

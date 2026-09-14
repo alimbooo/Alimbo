@@ -12,6 +12,7 @@ import { renderSettings } from '../views/settings.js';
 import { renderTheme } from '../views/theme.js';
 import { renderTypography } from '../views/typography.js';
 import { renderPublish } from '../views/publish.js';
+import { renderHomeProjects } from '../views/home-projects.js';
 import { renderHero } from '../views/hero.js';
 import { renderUpdate } from '../views/update.js';
 import { renderPreview } from '../views/preview.js';
@@ -34,7 +35,7 @@ export function show(view, updateHash = true) {
     const group = document.getElementById('group-settings');
     if (group && !group.classList.contains('open')) group.classList.add('open');
   }
-  if (['projects', 'categories'].includes(view)) {
+  if (['projects', 'categories', 'home-projects'].includes(view)) {
     const group = document.getElementById('group-projects');
     if (group && !group.classList.contains('open')) group.classList.add('open');
   }
@@ -51,6 +52,7 @@ export function render() {
   if (state.currentView === 'menu') return renderMenu();
   if (state.currentView === 'page-edit') return renderPageEdit();
   if (state.currentView === 'projects') return renderProjects();
+  if (state.currentView === 'home-projects') return renderHomeProjects();
   if (state.currentView === 'categories') return renderCategories();
   if (state.currentView === 'resume') return renderResume();
   if (state.currentView === 'media') return renderMedia();

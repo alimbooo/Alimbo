@@ -81,7 +81,19 @@ export default function Home() {
           const gridClasses = { 2: 'md:grid-cols-2', 3: 'md:grid-cols-3', 4: 'md:grid-cols-4' };
           const gridClass = gridClasses[section.grid as keyof typeof gridClasses] || 'md:grid-cols-3';
           const max = parseInt(section.maxItems) || 6;
-          const items = allProjects.slice(0, max);
+          let items = allProjects;
+          const selectedSlugs: string[] = Array.isArray(section.selectedProjects)
+            ? section.selectedProjects
+            : ((site as any).selectedProjects || (site as any).featuredProjects || []);
+
+          if (section.mode !== 'auto' && Array.isArray(selectedSlugs) && selectedSlugs.length > 0) {
+            const projectMap = new Map(allProjects.map((p) => [p.slug, p]));
+            const picked = selectedSlugs.map((slug) => projectMap.get(slug)).filter(Boolean) as typeof allProjects;
+            if (picked.length > 0) {
+              items = picked;
+            }
+          }
+          items = items.slice(0, max);
 
           return (
             <section key={idx} className="section border-t border-[var(--border)]">

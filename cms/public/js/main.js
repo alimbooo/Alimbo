@@ -7,7 +7,8 @@ import { openMediaModal, closeMediaModal, selectMediaFromModal, uploadMediaFromM
 import { openProjectImagePicker, removeProjectImage, reorderProjectImage, newProject, editProject, duplicateProject, deleteProject, toggleProjectCat, saveProject, onTemplateChange, onVideoSourceChange, onVideoOrientationChange, openCoverPickerModal as openProjectCoverPickerModal, selectCover as selectProjectCover } from './views/projects.js';
 import { openPostImagePicker, removePostImage, reorderPostImage, newPost, editPost, duplicatePost, deletePost, savePost, togglePostCat, onPostTemplateChange, onPostVideoSourceChange, onPostVideoOrientationChange, openCoverPickerModal as openPostCoverPickerModal, selectCover as selectPostCover } from './views/posts.js';
 import { openCatModal, saveCat, deleteCat, switchCatType } from './views/categories.js';
-import { addExp, renderExp, addEdu, renderEdu, addLink, renderLinks, saveResume, cancelResume } from './views/resume.js';
+import { addExp, renderExp, deleteExp, moveExpUp, moveExpDown, handleDragStartExp, handleDragOverExp, handleDropExp, handleDragEndExp, addEdu, renderEdu, deleteEdu, moveEduUp, moveEduDown, addLang, renderLangs, deleteLang, moveLangUp, moveLangDown, syncLangs, addLink, renderLinks, saveResume, cancelResume } from './views/resume.js';
+import { renderHomeProjects, searchHomeProjects, toggleHomeProjectsDisplay, setHomeProjectsMode, setHomeProjectsMax, setHomeProjectsGrid, addHomeProject, removeHomeProject, addAllAvailableHomeProjects, clearAllHomeProjects, moveHomeProjectUp, moveHomeProjectDown, handleDragStartHp, handleDragOverHp, handleDropHp, handleDragEndHp, saveHomeProjects } from './views/home-projects.js';
 import { uploadMedia, deleteMedia, openLightbox } from './views/media.js';
 import { saveSettings } from './views/settings.js';
 import { saveTheme, onThemeModeSelect, onAutoBaseColorChange, copyToManualAndSwitch, syncCustomColors } from './views/theme.js';
@@ -61,12 +62,49 @@ window.deleteCat = deleteCat;
 
 window.addExp = addExp;
 window.renderExp = renderExp;
+window.deleteExp = deleteExp;
+window.moveExpUp = moveExpUp;
+window.moveExpDown = moveExpDown;
+window.handleDragStartExp = handleDragStartExp;
+window.handleDragOverExp = handleDragOverExp;
+window.handleDropExp = handleDropExp;
+window.handleDragEndExp = handleDragEndExp;
+
 window.addEdu = addEdu;
 window.renderEdu = renderEdu;
+window.deleteEdu = deleteEdu;
+window.moveEduUp = moveEduUp;
+window.moveEduDown = moveEduDown;
+
+window.addLang = addLang;
+window.renderLangs = renderLangs;
+window.deleteLang = deleteLang;
+window.moveLangUp = moveLangUp;
+window.moveLangDown = moveLangDown;
+window.syncLangs = syncLangs;
+
 window.addLink = addLink;
 window.renderLinks = renderLinks;
 window.saveResume = saveResume;
 window.cancelResume = cancelResume;
+
+window.renderHomeProjects = renderHomeProjects;
+window.searchHomeProjects = searchHomeProjects;
+window.toggleHomeProjectsDisplay = toggleHomeProjectsDisplay;
+window.setHomeProjectsMode = setHomeProjectsMode;
+window.setHomeProjectsMax = setHomeProjectsMax;
+window.setHomeProjectsGrid = setHomeProjectsGrid;
+window.addHomeProject = addHomeProject;
+window.removeHomeProject = removeHomeProject;
+window.addAllAvailableHomeProjects = addAllAvailableHomeProjects;
+window.clearAllHomeProjects = clearAllHomeProjects;
+window.moveHomeProjectUp = moveHomeProjectUp;
+window.moveHomeProjectDown = moveHomeProjectDown;
+window.handleDragStartHp = handleDragStartHp;
+window.handleDragOverHp = handleDragOverHp;
+window.handleDropHp = handleDropHp;
+window.handleDragEndHp = handleDragEndHp;
+window.saveHomeProjects = saveHomeProjects;
 
 window.uploadMedia = uploadMedia;
 window.deleteMedia = deleteMedia;

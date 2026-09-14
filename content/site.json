@@ -96,7 +96,16 @@
       "id": "projects",
       "display": true,
       "maxItems": 6,
-      "grid": 3
+      "grid": 3,
+      "selectedProjects": [
+        "Video1",
+        "Video2",
+        "Thumbnail-3",
+        "Thumbnail-2",
+        "In-Front-Of-Camera",
+        "book-cover"
+      ],
+      "mode": "manual"
     },
     {
       "id": "posts",
@@ -105,5 +114,13 @@
       "grid": 4
     }
   ],
-  "siteUrl": "alimbo.ir"
+  "siteUrl": "alimbo.ir",
+  "featuredProjects": [
+    "Video1",
+    "Video2",
+    "Thumbnail-3",
+    "Thumbnail-2",
+    "In-Front-Of-Camera",
+    "book-cover"
+  ]
 }
