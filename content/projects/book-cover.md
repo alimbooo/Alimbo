@@ -11,7 +11,9 @@ categories:
   - Image
   - Ai-Image
   - Image-Edit
+  - Book-Covers
 template: image
+videoOrientation: horizontal
 videoSource: host
 videoUrl: ''
 images:
