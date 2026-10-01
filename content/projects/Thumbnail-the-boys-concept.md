@@ -1,11 +1,13 @@
 ---
 title: تامنیل ویدیوی یوتیوب با ایده سریال The Boys
 slug: Thumbnail-the-boys-concept
-description: طراحی تامنیل ویدیوی یوتیوب برگرفته از سریال The Boys با چت‌جی‌پی‌تی، نانو بنانا، فلو و فتوشاپ
+description: >-
+  طراحی تامنیل ویدیوی یوتیوب برگرفته از سریال The Boys با چت‌جی‌پی‌تی، نانو
+  بنانا، فلو و فتوشاپ
 cover: /media/the-boys-thumbnail.webp
 year: ''
 date: ''
-client: یوتیوب شخصی
+client: یوتیوب Iran within
 technologies: []
 categories:
   - Image
