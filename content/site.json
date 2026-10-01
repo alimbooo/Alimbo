@@ -103,7 +103,8 @@
         "Thumbnail-3",
         "Thumbnail-2",
         "In-Front-Of-Camera",
-        "book-cover"
+        "book-cover",
+        "ai-image-1"
       ],
       "mode": "manual"
     },
@@ -116,6 +117,7 @@
   ],
   "siteUrl": "alimbo.ir",
   "featuredProjects": [
+    "faranakhl-sabz",
     "Video1",
     "Video2",
     "Thumbnail-3",
