@@ -4,7 +4,7 @@ slug: video-giveaway-campaign-english-camera
 description: >-
   اجرای جلوی دوربین به زبان انگلیسی جهت معرفی کمپین و جایزه (Giveaway) همراه با
   تدوین عمودی برای نخل سبز
-cover: /media/video-cover-20.jpg
+cover: /media/5465756875.jpg
 year: ''
 date: ''
 client: نخل سبز

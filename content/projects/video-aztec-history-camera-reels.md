@@ -2,7 +2,7 @@
 title: 'اجرا ویدیو ریلز روایت تاریخی حمله به آزتک‌ها '
 slug: video-aztec-history-camera-reels
 description: اجرای جلوی دوربین درباره واقعه تاریخی حمله اروپایی‌ها به تمدن آزتک
-cover: /media/video-cover-7.jpg
+cover: /media/343454654657.jpg
 year: ''
 date: ''
 client: نخل سبز

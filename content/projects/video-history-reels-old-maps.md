@@ -4,7 +4,7 @@ slug: video-history-reels-old-maps
 description: >-
   تدوین ویدیوی ریلز تاریخی با فیلمورا و متحرک‌سازی نقشه‌های کهن با Old Maps
   Online برای نخل سبز
-cover: /media/video-cover-4.jpg
+cover: /media/561654194.jpg
 year: ''
 date: ''
 client: نخل سبز

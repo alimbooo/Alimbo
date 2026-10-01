@@ -4,7 +4,7 @@ slug: video-reels-kling-ai
 description: >-
   ادیت ویدیو با پریمیر، فیلمبرداری اختصاصی، زیرنویس هوش مصنوعی و ترنزیشن‌های
   تغییر استایل با Kling AI برای نخل سبز
-cover: /media/video-cover-1.jpg
+cover: /media/5249849849841984.jpg
 year: ''
 date: ''
 client: نخل سبز

@@ -4,7 +4,7 @@ slug: video-studio-three-camera-podcast
 description: >-
   سناریونویسی، فیلمبرداری سه دوربینه در استودیو، ارتقای صدا با هوش مصنوعی و
   تدوین مالتی‌کم در پریمیر برای نخل سبز
-cover: /media/video-cover-13.jpg
+cover: /media/65498498498.jpg
 year: ''
 date: ''
 client: نخل سبز

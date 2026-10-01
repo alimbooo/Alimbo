@@ -4,7 +4,7 @@ slug: video-father-of-nation-omni-veo-trailer
 description: >-
   ساخت تریلر کتاب پدر مهربان با متحرک‌سازی نقاشی‌ها توسط هوش مصنوعی Omni Flash و
   Veo، طراحی صدا و تدوین در فیلمورا و پریمیر برای نخل سبز
-cover: /media/video-cover-19.jpg
+cover: /media/32435346456.jpg
 year: ''
 date: ''
 client: نخل سبز

@@ -4,7 +4,7 @@ slug: video-book-intro-english-camera
 description: >-
   اجرای جلوی دوربین به زبان انگلیسی جهت معرفی کتاب برای انتشارات نخل سبز و ادیت
   ویدیو
-cover: /media/video-cover-2.jpg
+cover: /media/6548648948.jpg
 year: ''
 date: ''
 client: نخل سبز

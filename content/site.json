@@ -98,13 +98,12 @@
       "maxItems": 6,
       "grid": 3,
       "selectedProjects": [
-        "Video1",
-        "Video2",
-        "Thumbnail-3",
-        "Thumbnail-2",
-        "In-Front-Of-Camera",
         "book-cover",
-        "ai-image-1"
+        "Thumbnail-ai-roadmap",
+        "ai-image-1",
+        "video-comic-motion-full-portuguese-gold",
+        "video-father-of-nation-omni-veo-trailer",
+        "video-giveaway-campaign-english-camera"
       ],
       "mode": "manual"
     },
@@ -117,12 +116,11 @@
   ],
   "siteUrl": "alimbo.ir",
   "featuredProjects": [
+    "book-cover",
+    "Thumbnail-ai-roadmap",
     "ai-image-1",
-    "Video1",
-    "Video2",
-    "Thumbnail-3",
-    "Thumbnail-2",
-    "In-Front-Of-Camera",
-    "book-cover"
+    "video-comic-motion-full-portuguese-gold",
+    "video-father-of-nation-omni-veo-trailer",
+    "video-giveaway-campaign-english-camera"
   ]
 }
