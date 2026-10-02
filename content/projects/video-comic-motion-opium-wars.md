@@ -1,12 +1,20 @@
 ---
 title: کمیک‌موشن تاریخی جنگ تریاک
 slug: video-comic-motion-opium-wars
-description: ساخت کمیک‌موشن با تصاویر FLUX و نانو بنانا، استایل‌سازی در فتوشاپ، سناریوی ChatGPT، صداگذاری ElevenLabs و تدوین پریمیر برای نخل سبز
+description: >-
+  ساخت کمیک‌موشن با تصاویر FLUX و نانو بنانا، استایل‌سازی در فتوشاپ، سناریوی
+  ChatGPT، صداگذاری ElevenLabs و تدوین پریمیر برای نخل سبز
 cover: /media/video-cover-17.jpg
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - FLUX
+  - Nano Banana
+  - Photoshop
+  - ChatGPT
+  - ElevenLabs
+  - Premiere Pro
 categories:
   - video
   - Ai-Video
@@ -14,7 +22,23 @@ categories:
 template: video
 videoOrientation: horizontal
 videoSource: embed
-videoUrl: '<iframe src="https://drive.google.com/file/d/1kyJs4lB5IqQJ4PYYEc7OM5XhMIcggj2w/preview" width="640" height="480"></iframe>'
+videoUrl: >-
+  <iframe
+  src="https://drive.google.com/file/d/1kyJs4lB5IqQJ4PYYEc7OM5XhMIcggj2w/preview"
+  width="640" height="480"></iframe>
 images: []
+role:
+  - توسعه سناریو و بازنویسی دیالوگ‌ها
+  - تصویرسازی فریم‌های کمیک با FLUX و نانو بنانا
+  - طراحی چیدمان صفحات کمیک در فتوشاپ
+  - دوبله و تولید صدا با ElevenLabs
+  - متحرک‌سازی کمیک‌موشن و تدوین در پریمیر
+tools:
+  - FLUX
+  - Nano Banana
+  - Photoshop
+  - ChatGPT
+  - ElevenLabs
+  - Premiere Pro
 ---
 این کمیک‌موشن روایتی مستند از وقایع تاریخی جنگ‌های تریاک بر اساس منابع مکتوب برای انتشارات نخل سبز است. طراحی کاراکترها و تصویرسازی با هوش مصنوعی فلاکس و نانو بنانا انجام گرفت و با فتوشاپ به فرمت صفحات کمیک تبدیل شد. دیالوگ‌نویسی و توسعه شخصیت‌ها با ChatGPT، صداگذاری با ElevenLabs و موشن‌گرافی و تدوین نهایی در پریمیر صورت پذیرفت.

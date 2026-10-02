@@ -6,7 +6,8 @@ cover: /media/6758.webp
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - Photoshop
 categories:
   - Image
   - Image-Edit
@@ -16,5 +17,12 @@ videoSource: host
 videoUrl: ''
 images:
   - /media/6758.webp
+role:
+  - ایده و ترکیب‌بندی ویدیوی ریکشن
+  - برش چهره و سوژه‌ها
+  - اصلاح رنگ و نور و افکت‌های جلب توجه
+  - طراحی تایپوگرافی بولد
+tools:
+  - Photoshop
 ---
 کل پروسه طراحی این تامنیل با فتوشاپ انجام شده است.

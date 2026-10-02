@@ -6,7 +6,9 @@ cover: /media/helicopter-down.jpg
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - هوش مصنوعی تصویرساز
+  - Photoshop
 categories:
   - Image
   - Youtube-Thumbnail
@@ -18,5 +20,13 @@ videoSource: host
 videoUrl: ''
 images:
   - /media/helicopter-down.jpg
+role:
+  - ایده‌پردازی صحنه دراماتیک
+  - تولید تصویر با هوش مصنوعی
+  - ترکیب لایه‌ها، افکت دود و آتش و نورپردازی
+  - طراحی متن و کامپوزیت نهایی تامنیل
+tools:
+  - هوش مصنوعی تصویرساز
+  - Photoshop
 ---
 این تامنیل ویدیوی یوتیوب برای نخل سبز با استفاده از هوش مصنوعی ساخته شده و در نهایت تمامی مراحل ادیت، ترکیب عناصر، اصلاحات آن در فتوشاپ انجام شده است.

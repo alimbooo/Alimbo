@@ -6,7 +6,9 @@ cover: /media/is-your-mom-ruining-your-life.webp
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - Nano Banana
+  - Photoshop
 categories:
   - Image
   - Youtube-Thumbnail
@@ -18,5 +20,13 @@ videoSource: host
 videoUrl: ''
 images:
   - /media/is-your-mom-ruining-your-life.webp
+role:
+  - ایده‌پردازی صحنه و حس‌وحال کاراکترها
+  - تولید تصویر کاراکتر با هوش مصنوعی
+  - جداسازی و ترکیب کاراکترها
+  - ادیت نورپردازی و تایپوگرافی تامنیل
+tools:
+  - Nano Banana
+  - Photoshop
 ---
 این پروژه تامنیل ویدیوی یوتیوب برای انتشارات نخل سبز است که پروسه تولید و تصویرسازی آن با هوش مصنوعی نانو بنانا (Nano Banana) انجام شده و در نهایت تنظیمات نوری، اصلاح رنگ، ترکیب کاراکترها در نرم‌افزار فتوشاپ به اجرا درآمده است.

@@ -6,7 +6,10 @@ cover: /media/faranakhl-banner.webp
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - Midjourney
+  - Nano Banana
+  - Photoshop
 categories:
   - Image
   - Ai-Image
@@ -17,6 +20,15 @@ videoSource: host
 videoUrl: ''
 images:
   - /media/faranakhl-banner.webp
+role:
+  - ایده‌پردازی پوستر تبلیغاتی
+  - خلق کاراکتر و تصویرسازی با هوش مصنوعی
+  - ادیت و اصلاح جزئیات تصاویر
+  - کامپوزیت و چیدمان نهایی
+tools:
+  - Midjourney
+  - Nano Banana
+  - Photoshop
 ---
 پروسه طراحی و اجرای این پروژه برای انتشارات نخل سبز به صورت زیر انجام شده است:
 - تولید اولیه با هوش مصنوعی: در ابتدا تصاویر و کاراکترهای مختلف با هوش مصنوعی میدجرنی (Midjourney) ساخته شدند.

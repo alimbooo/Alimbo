@@ -8,7 +8,8 @@ cover: /media/6548648948.jpg
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - Premiere Pro
 categories:
   - video
   - In-Front-Of-Camera
@@ -21,5 +22,11 @@ videoUrl: >-
   src="https://drive.google.com/file/d/19R7vzMc_CtE_SJJGE_iLtsoBTv4Rs-0W/preview"
   width="640" height="480"></iframe>
 images: []
+role:
+  - اجرای جلوی دوربین به زبان انگلیسی
+  - سناریو و شرح جذاب کتاب
+  - تدوین ریلز و بهینه‌سازی صوتی
+tools:
+  - Premiere Pro
 ---
 در این ویدیو اجرای جلوی دوربین به زبان انگلیسی را بر عهده داشتم که در آن به معرفی و توضیح درباره کتابی از انتشارات نخل سبز پرداخته‌ام. ویدیو به صورت عمودی مناسب شبکه‌های اجتماعی و ریلز تهیه و تدوین شده است.

@@ -38,6 +38,7 @@ function postToMarkdown(data) {
 }
 
 function projectToMarkdown(data) {
+  const tools = data.tools !== undefined ? (data.tools || []) : (data.technologies || []);
   const fm = {
     title: data.title || '',
     slug: data.slug || '',
@@ -46,7 +47,9 @@ function projectToMarkdown(data) {
     year: data.year || '',
     date: data.date || '',
     client: data.client || '',
-    technologies: data.technologies || [],
+    role: data.role || [],
+    tools: tools,
+    technologies: tools,
     categories: data.categories || [],
     template: data.template || 'image',
     videoOrientation: data.videoOrientation || 'horizontal',

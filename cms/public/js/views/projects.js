@@ -101,7 +101,17 @@ export function renderProjectEdit() {
             <div><label>سال</label><input id="f-year" value="${p.year || ''}"></div>
             <div><label>کارفرما</label><input id="f-client" value="${p.client || ''}"></div>
           </div>
-          <div style="margin-top:12px"><label>تاریخ (اختیاری)</label><input id="f-date" type="text" placeholder="YYYY-MM-DD" value="${p.date || ''}" style="direction:ltr; text-align:left"></div>
+          <div class="grid2" style="margin-top:12px">
+            <div>
+              <label>ابزارها (با / یا کاما جدا کنید)</label>
+              <input id="f-tools" value="${Array.isArray(p.tools) ? p.tools.join(' / ') : (p.tools || '')}" placeholder="مثال: ChatGPT / Photoshop">
+              <div style="margin-top:12px"><label>تاریخ (اختیاری)</label><input id="f-date" type="text" placeholder="YYYY-MM-DD" value="${p.date || ''}" style="direction:ltr; text-align:left"></div>
+            </div>
+            <div>
+              <label>کار من (هر مورد در یک خط)</label>
+              <textarea id="f-role" style="min-height:80px">${Array.isArray(p.role) ? p.role.join('\n') : (p.role || '')}</textarea>
+            </div>
+          </div>
 
           <label style="margin-top:12px">محتوای کامل (Markdown)</label>
           <textarea id="f-content" style="min-height:300px">${p.content || ''}</textarea>
@@ -206,6 +216,10 @@ export function syncEditingProject() {
   state.editingProject.cover = val('f-cover');
   state.editingProject.year = val('f-year');
   state.editingProject.client = val('f-client');
+  const roleEl = document.getElementById('f-role');
+  if (roleEl) state.editingProject.role = roleEl.value.split('\n').map((s) => s.trim()).filter(Boolean);
+  const toolsEl = document.getElementById('f-tools');
+  if (toolsEl) state.editingProject.tools = toolsEl.value.split(/[\n,]+|\s*\/\s*/).map((s) => s.trim()).filter(Boolean);
   state.editingProject.date = val('f-date');
   state.editingProject.content = val('f-content');
   const videoOrientationEl = document.getElementById('f-videoOrientation');
@@ -245,10 +259,15 @@ export async function saveProject() {
   const videoOrientationEl = document.getElementById('f-videoOrientation');
   const videoSourceEl = document.getElementById('f-videoSource');
   const videoUrlEl = document.getElementById('f-videoUrl');
+  const roleEl = document.getElementById('f-role');
+  const toolsEl = document.getElementById('f-tools');
   const data = {
     ...state.editingProject,
     title: val('f-title'), slug: val('f-slug'), description: val('f-description'), cover: val('f-cover'),
     year: val('f-year'), client: val('f-client'), date: val('f-date'),
+    role: roleEl ? roleEl.value.split('\n').map((s) => s.trim()).filter(Boolean) : (state.editingProject.role || []),
+    tools: toolsEl ? toolsEl.value.split(/[\n,]+|\s*\/\s*/).map((s) => s.trim()).filter(Boolean) : (state.editingProject.tools || []),
+    technologies: toolsEl ? toolsEl.value.split(/[\n,]+|\s*\/\s*/).map((s) => s.trim()).filter(Boolean) : (state.editingProject.tools || []),
     template: val('f-template'),
     videoOrientation: videoOrientationEl ? videoOrientationEl.value : (state.editingProject.videoOrientation || 'horizontal'),
     videoSource: videoSourceEl ? videoSourceEl.value : (state.editingProject.videoSource || 'host'),

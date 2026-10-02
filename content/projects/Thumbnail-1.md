@@ -6,7 +6,8 @@ cover: /media/3465546456.webp
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - Photoshop
 categories:
   - Image
   - Youtube-Thumbnail
@@ -16,6 +17,13 @@ videoSource: host
 videoUrl: ''
 images:
   - /media/3465546456.webp
+role:
+  - ایده‌پردازی کانسپت تاریخی تامنیل
+  - برش، تفکیک لایه‌ها و ترکیب تصاویر
+  - تنظیم کنتراست، نورپردازی و افکت‌های بصری
+  - طراحی تایپوگرافی جذاب تامنیل
+tools:
+  - Photoshop
 ---
 کل پروسه طراحی این تامنیل با فتوشاپ انجام شده است.
 

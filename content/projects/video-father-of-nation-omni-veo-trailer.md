@@ -8,7 +8,11 @@ cover: /media/32435346456.jpg
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - Google Veo
+  - Omni Flash
+  - Premiere Pro
+  - Filmora
 categories:
   - video
   - Ai-Video
@@ -21,5 +25,15 @@ videoUrl: >-
   src="https://drive.google.com/file/d/12bxkItIWPyL4qu6kdEJxMdnQUih-2k9v/preview"
   width="640" height="480"></iframe>
 images: []
+role:
+  - متحرک‌سازی نقاشی‌های آبرنگ با هوش مصنوعی
+  - انیمیت فرآیند کشیدن قلم‌مو با Veo و Omni Flash
+  - صداگذاری سینمایی و انتخاب موسیقی حماسی
+  - اصلاح رنگ و تدوین تلفیقی در پریمیر و فیلمورا
+tools:
+  - Google Veo
+  - Omni Flash
+  - Premiere Pro
+  - Filmora
 ---
 این پروژه تریلر معرفی کتاب پدر مهربان برای انتشارات نخل سبز است. با توجه به آرت‌استایل آبرنگی تصاویر کتاب، با استفاده از هوش مصنوعی گوگل (Omni Flash و Veo) فرآیند ترسیم قلم‌مو و نقاشی شدن تصاویر متحرک شد. انتخاب و میکس صداها، موسیقی حماسی، چیدمان سکانس‌ها، تصحیح نور و تدوین با ترکیب فیلمورا و پریمیر به انجام رسید.

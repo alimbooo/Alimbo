@@ -6,7 +6,8 @@ cover: /media/proposal-sacred-love.webp
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - Photoshop
 categories:
   - Image
   - Youtube-Thumbnail
@@ -17,5 +18,12 @@ videoSource: host
 videoUrl: ''
 images:
   - /media/proposal-sacred-love.webp
+role:
+  - انتخاب و استخراج بهترین فریم از ویدیو
+  - بهینه‌سازی کیفیت و ارتقای وضوح تصویر
+  - طراحی المان‌های گرافیکی و اصلاح رنگ
+  - تایپوگرافی و طراحی نهایی تامنیل
+tools:
+  - Photoshop
 ---
 کل پروسه طراحی این تامنیل یوتیوب در نرم‌افزار فتوشاپ انجام شده است. در ابتدا یک فریم مناسب از ویدیو انتخاب شد و سپس متن، المان‌های گرافیکی، افکت‌ها، اصلاح رنگ و نور پیاده‌سازی شد تا جلوه بصری مناسبی برای جذب مخاطب ایجاد شود.

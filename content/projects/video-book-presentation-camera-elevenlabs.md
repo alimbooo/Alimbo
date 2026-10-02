@@ -9,7 +9,9 @@ cover: >-
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - ElevenLabs
+  - Premiere Pro
 categories:
   - video
   - In-Front-Of-Camera
@@ -23,5 +25,13 @@ videoUrl: >-
   src="https://drive.google.com/file/d/1kkFCg-8VpOk6KlFocl029tgZH9RS1Ubj/preview"
   width="640" height="480"></iframe>
 images: []
+role:
+  - اجرای بخش‌های اصلی جلوی دوربین
+  - تولید نریشن صوتی با ElevenLabs
+  - تدوین و هماهنگ‌سازی چند لایه صدا و تصویر
+  - درج المان‌های گرافیکی و اصلاح رنگ
+tools:
+  - ElevenLabs
+  - Premiere Pro
 ---
 در این ویدیوی یوتیوب، معرفی و تشریح محتوای کتاب جلوی دوربین توسط خودم اجرا گردید. همچنین جهت بخش‌های توضیحی تکمیلی، صدای نریشن با هوش مصنوعی ElevenLabs تولید و تدوین ویدیو جهت انتشار در یوتیوب با هماهنگی کامل صدا و تصویر انجام شد.

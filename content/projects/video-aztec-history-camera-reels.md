@@ -6,7 +6,8 @@ cover: /media/343454654657.jpg
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - Premiere Pro
 categories:
   - video
   - In-Front-Of-Camera
@@ -19,5 +20,12 @@ videoUrl: >-
   src="https://drive.google.com/file/d/1lZQ4DsMVJgFQ7OVLuVReI2JKZt5HLdKk/preview"
   width="640" height="480"></iframe>
 images: []
+role:
+  - اجرای جلوی دوربین به زبان انگلیسی
+  - بیان روایت تاریخی و لحن‌پردازی متناسب
+  - تدوین ریلز عمودی شبکه‌های اجتماعی
+  - اضافه‌کردن المان‌های بصری و زیرنویس
+tools:
+  - Premiere Pro
 ---
  این ویدیو روایتی تاریخی پیرامون هجوم اروپایی‌ها به تمدن آزتک‌ها است که  اجرا ویدیو به زبان انگلیسی با من بوده.

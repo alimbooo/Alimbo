@@ -8,7 +8,9 @@ cover: /media/6549848949.jpg
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - Premiere Pro
+  - Photoshop
 categories:
   - video
   - Video-Edit
@@ -20,5 +22,13 @@ videoUrl: >-
   src="https://drive.google.com/file/d/1SJiNrFcZThgFpHi-rwHoZ0jr0MZWO3J-/preview"
   width="640" height="480"></iframe>
 images: []
+role:
+  - طراحی قالب و فریم توییتری
+  - ساخت موشن هایلایت کلمات و سطور کتاب
+  - تدوین ریلز با ریتم متناسب سوشال مدیا
+  - هماهنگ‌سازی صدا و افکت‌های متنی در پریمیر
+tools:
+  - Premiere Pro
+  - Photoshop
 ---
 این ویدیو نسخه کوتاه و ریلز اینستاگرامی برگرفته از یک ویدیوی طولانی یوتیوب برای انتشارات نخل سبز است. طراحی فرم گرافیکی مشابه توییت، موشن هایلایت خط به خط متن کتاب و تدوین هماهنگ آن به طور کامل با استفاده از نرم‌افزار پریمیر اجرا شده است.

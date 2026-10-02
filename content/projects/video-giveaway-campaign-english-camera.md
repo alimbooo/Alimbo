@@ -8,7 +8,12 @@ cover: /media/5465756875.jpg
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+role:
+  - اجرای جلوی دوربین به زبان انگلیسی
+  - نگارش کال‌تو‌اکشن (CTA) موثر کمپین
+tools: []
+technologies:
+  - Premiere Pro
 categories:
   - video
   - In-Front-Of-Camera

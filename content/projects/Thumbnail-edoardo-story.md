@@ -6,7 +6,8 @@ cover: /media/edoardo-story.jpg
 year: ''
 date: ''
 client: نخل سبز
-technologies: []
+technologies:
+  - Photoshop
 categories:
   - Image
   - Youtube-Thumbnail
@@ -17,5 +18,12 @@ videoSource: host
 videoUrl: ''
 images:
   - /media/edoardo-story.jpg
+role:
+  - اجرای جلوی دوربین
+  - ایده‌پردازی کانسپت تامنیل
+  - ادیت عکس و اصلاح چهره و نور
+  - طراحی و تایپوگرافی تامنیل
+tools:
+  - Photoshop
 ---
 این پروژه تامنیل ویدیوی یوتیوب برای انتشارات نخل سبز است که طراحی و ساخت تصویر آن با نرم‌افزار فتوشاپ انجام شده است. اجرای ویدیو نیز توسط خودم انجام شده است.

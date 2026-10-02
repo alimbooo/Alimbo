@@ -44,6 +44,20 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const projects = getProjects();
   const index = projects.findIndex((item) => item.slug === project.slug);
   const related = projects.filter((item) => item.slug !== project.slug && item.categories?.some((cat) => project.categories?.includes(cat))).slice(0, 2);
+  const parseList = (val: unknown): string[] => {
+    if (!val) return [];
+    if (Array.isArray(val)) return val.map((v) => String(v).trim()).filter(Boolean);
+    if (typeof val === 'string') {
+      return val.split(/[\n,]+|\s*\/\s*/).map((v) => v.trim()).filter(Boolean);
+    }
+    return [];
+  };
+
+  const projectRoles = parseList(project.role);
+  const projectTools = project.tools !== undefined
+    ? parseList(project.tools)
+    : parseList(project.technologies);
+
   return (
     <article className="section pt-10 md:pt-20">
       <div className="container">
@@ -111,6 +125,52 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   </dd>
                 </div>
               </div>
+
+              {projectTools.length > 0 && (
+                <div className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--background)] text-[var(--primary)]">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <dt className="text-[var(--muted)] text-xs mb-1">ابزارها</dt>
+                    <dd className="flex flex-wrap gap-1.5 mt-1">
+                      {projectTools.map((tool, idx) => (
+                        <span
+                          key={idx}
+                          className="tag text-xs"
+                        >
+                          {tool}
+                        </span>
+                      ))}
+                    </dd>
+                  </div>
+                </div>
+              )}
+
+              {projectRoles.length > 0 && (
+                <div className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--background)] text-[var(--primary)]">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 11l3 3L22 4" />
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <dt className="text-[var(--muted)] text-xs mb-1">کار من</dt>
+                    <dd className="mt-1">
+                      <ul className="space-y-1.5 text-xs text-[var(--foreground)] leading-relaxed">
+                        {projectRoles.map((role, idx) => (
+                          <li key={idx}>
+                            {role}
+                          </li>
+                        ))}
+                      </ul>
+                    </dd>
+                  </div>
+                </div>
+              )}
             </dl>
           </aside>
         </div>
