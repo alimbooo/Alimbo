@@ -4,6 +4,7 @@ import { renderDashboard } from '../views/dashboard.js';
 import { renderPages, renderPageEdit } from '../views/pages.js';
 import { renderMenu } from '../views/menu.js';
 import { renderProjects, renderProjectEdit } from '../views/projects.js';
+import { renderProjectsOrder } from '../views/projects-order.js';
 import { renderCategories } from '../views/categories.js';
 import { renderPosts, renderPostEdit } from '../views/posts.js';
 import { renderResume } from '../views/resume.js';
@@ -35,7 +36,7 @@ export function show(view, updateHash = true) {
     const group = document.getElementById('group-settings');
     if (group && !group.classList.contains('open')) group.classList.add('open');
   }
-  if (['projects', 'categories', 'home-projects'].includes(view)) {
+  if (['projects', 'projects-order', 'categories', 'home-projects'].includes(view)) {
     const group = document.getElementById('group-projects');
     if (group && !group.classList.contains('open')) group.classList.add('open');
   }
@@ -52,6 +53,7 @@ export function render() {
   if (state.currentView === 'menu') return renderMenu();
   if (state.currentView === 'page-edit') return renderPageEdit();
   if (state.currentView === 'projects') return renderProjects();
+  if (state.currentView === 'projects-order') return renderProjectsOrder();
   if (state.currentView === 'home-projects') return renderHomeProjects();
   if (state.currentView === 'categories') return renderCategories();
   if (state.currentView === 'resume') return renderResume();

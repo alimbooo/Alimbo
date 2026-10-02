@@ -3,26 +3,39 @@ import { api } from '../core/api.js';
 import { loadAll, loadMedia } from '../core/data.js';
 import { show, render } from '../core/router.js';
 import { val, showMsg } from '../utils/helpers.js';
+import { icon } from '../icons.js';
 
 export function renderProjects() {
+  const total = (state.projects || []).length;
   dom.content.innerHTML = `
-    <div style="margin-bottom:24px">
-        <h2 style="margin-bottom:4px">پروژه‌ها</h2>
-        <p class="sub" style="margin-bottom:0">مدیریت نمونه‌کارها و پروژه‌ها.</p>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:16px">
+      <div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px">
+          <h2 style="margin:0">پروژه‌ها</h2>
+          <span class="tag" style="background:var(--card); border:1px solid var(--border); font-size:0.8rem; padding:3px 10px">${total} پروژه</span>
+        </div>
+        <p class="sub" style="margin-bottom:0">مدیریت نمونه‌کارها، ویرایش و تغییر چیدمان پروژه‌ها.</p>
       </div>
-    <button class="btn" style="margin-bottom:24px" onclick="newProject()">+ ایجاد پروژه جدید</button>
+      <div style="display:flex; gap:10px; align-items:center">
+        <button class="btn sec" onclick="show('projects-order')" title="تغییر ترتیب قرارگیری پروژه‌ها در سایت">${icon('sort')} ترتیب پروژه‌ها</button>
+        <button class="btn" onclick="newProject()">+ ایجاد پروژه جدید</button>
+      </div>
+    </div>
     <div class="grid2">
-      ${state.projects.map((p) => `
+      ${state.projects.map((p, idx) => `
         <div class="card" style="display:flex; flex-direction:column; padding:0; overflow:hidden">
           <div style="height:140px; background:var(--card); position:relative">
              ${p.cover ? `<img src="${p.cover}" style="width:100%; height:100%; object-fit:cover">` : '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#9ba6b5">بدون تصویر</div>'}
              <span class="tag" style="position:absolute; top:8px; right:8px; background:rgba(23, 48, 59, 0.9)">${p.template === 'video' ? 'ویدیو' : 'تصویر'}</span>
+             <span style="position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.7); color:var(--primary); font-size:0.75rem; font-weight:bold; padding:2px 8px; border-radius:6px">#${idx + 1}</span>
           </div>
           <div style="padding:16px; flex:1; display:flex; flex-direction:column">
             <h3 style="margin-bottom:8px; font-size:1.1rem">${p.title || '(بدون عنوان)'}</h3>
             <p style="color:#9ba6b5; font-size:0.85rem; margin-bottom:16px; flex:1; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden">${p.description || 'بدون توضیح'}</p>
             <div class="row" style="margin-top:auto">
               <button class="btn sec" style="flex:1; justify-content:center" onclick="editProject('${p.slug}')">ویرایش</button>
+              <button class="btn sec" style="padding:10px" onclick="window.moveProjectDirectly('${p.slug}', -1)" title="انتقال به بالاتر" ${idx === 0 ? 'disabled' : ''}>${icon('arrow_up')}</button>
+              <button class="btn sec" style="padding:10px" onclick="window.moveProjectDirectly('${p.slug}', 1)" title="انتقال به پایین‌تر" ${idx === total - 1 ? 'disabled' : ''}>${icon('arrow_down')}</button>
               <button class="btn sec" style="padding:10px" onclick="duplicateProject('${p.slug}')" title="کپی">${icon('copy')}</button>
               <button class="btn danger" style="padding:10px" onclick="deleteProject('${p.slug}')" title="حذف">${icon('trash')}</button>
             </div>
@@ -154,11 +167,11 @@ export function renderProjectEdit() {
                 <option value="embed" ${p.videoSource === 'embed' ? 'selected' : ''}>کد امبد (Embed)</option>
               </select>
               ${p.videoSource === 'embed' ?
-                `<label style="margin-top:12px">کد امبد</label>
+        `<label style="margin-top:12px">کد امبد</label>
                  <textarea id="f-videoUrl" style="min-height:90px;font-family:monospace;direction:ltr;text-align:left" onchange="state.editingProject.videoUrl=this.value">${p.videoUrl || ''}</textarea>`
-                :
-                `<label style="margin-top:12px">لینک ویدئو</label><input id="f-videoUrl" style="direction:ltr;text-align:left" value="${p.videoUrl || ''}" onchange="state.editingProject.videoUrl=this.value">`
-              }
+        :
+        `<label style="margin-top:12px">لینک ویدئو</label><input id="f-videoUrl" style="direction:ltr;text-align:left" value="${p.videoUrl || ''}" onchange="state.editingProject.videoUrl=this.value">`
+      }
             ` : ''}
             ${p.template === 'image' ? `
               <div style="margin-top:16px;">
@@ -200,10 +213,10 @@ export function openCoverPickerModal() {
 export function selectCover(path) {
   if (!state.editingProject) return;
   const fCover = document.getElementById('f-cover');
-  if(fCover) fCover.value = path;
+  if (fCover) fCover.value = path;
   state.editingProject.cover = path;
   const preview = document.getElementById('cover-preview');
-  if(preview) preview.innerHTML = `<img src="${path}" class="preview" style="width:100%; max-width:100%; height:auto">`;
+  if (preview) preview.innerHTML = `<img src="${path}" class="preview" style="width:100%; max-width:100%; height:auto">`;
 }
 
 
@@ -346,3 +359,49 @@ export function reorderProjectImage(toIndex, fromIndexStr) {
   state.editingProject.images.splice(toIndex, 0, img);
   renderProjectEdit();
 };
+
+export async function moveProjectDirectly(slug, direction) {
+  if (!state.projects || !state.projects.length) return;
+  const idx = state.projects.findIndex(p => p.slug === slug);
+  if (idx === -1) return;
+  const targetIdx = idx + direction;
+  if (targetIdx < 0 || targetIdx >= state.projects.length) return;
+
+  // Swap
+  const temp = state.projects[idx];
+  state.projects[idx] = state.projects[targetIdx];
+  state.projects[targetIdx] = temp;
+
+  // Keep site.projectsOrder updated
+  if (!state.site) state.site = {};
+  state.site.projectsOrder = state.projects.map(p => p.slug);
+
+  // Re-render immediately
+  renderProjects();
+
+  try {
+    let res = null;
+    try {
+      res = await api('/api/projects/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: state.site.projectsOrder })
+      });
+    } catch (_) {}
+
+    if (!res || !res.ok) {
+      res = await api('/api/site', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(state.site)
+      });
+    }
+
+    if (res && res.ok) {
+      showMsg(direction < 0 ? 'پروژه یک رتبه بالاتر برده شد' : 'پروژه یک رتبه پایین‌تر برده شد');
+    }
+  } catch (e) {
+    showMsg('خطا در ذخیره ترتیب جدید', true);
+  }
+}
+

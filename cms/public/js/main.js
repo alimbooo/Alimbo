@@ -4,7 +4,8 @@ import { api } from './core/api.js';
 import { loadAll, loadFonts, loadMedia } from './core/data.js';
 import { show, render, toggleGroup } from './core/router.js';
 import { openMediaModal, closeMediaModal, selectMediaFromModal, uploadMediaFromModal, toggleMediaModalGalleryMode, confirmMediaSelection } from './components/media-modal.js';
-import { openProjectImagePicker, removeProjectImage, reorderProjectImage, newProject, editProject, duplicateProject, deleteProject, toggleProjectCat, saveProject, onTemplateChange, onVideoSourceChange, onVideoOrientationChange, openCoverPickerModal as openProjectCoverPickerModal, selectCover as selectProjectCover } from './views/projects.js';
+import { openProjectImagePicker, removeProjectImage, reorderProjectImage, newProject, editProject, duplicateProject, deleteProject, toggleProjectCat, saveProject, onTemplateChange, onVideoSourceChange, onVideoOrientationChange, openCoverPickerModal as openProjectCoverPickerModal, selectCover as selectProjectCover, moveProjectDirectly } from './views/projects.js';
+import { renderProjectsOrder, searchProjectsOrder, filterProjectsOrderCategory, toggleProjectsOrderAutoSave, moveProjectOrderUp, moveProjectOrderDown, moveProjectOrderToTop, moveProjectOrderToBottom, handleDragStartPo, handleDragOverPo, handleDropPo, handleDragEndPo, sortProjectsOrderQuick, saveProjectsOrder } from './views/projects-order.js';
 import { openPostImagePicker, removePostImage, reorderPostImage, newPost, editPost, duplicatePost, deletePost, savePost, togglePostCat, onPostTemplateChange, onPostVideoSourceChange, onPostVideoOrientationChange, openCoverPickerModal as openPostCoverPickerModal, selectCover as selectPostCover } from './views/posts.js';
 import { openCatModal, saveCat, deleteCat, switchCatType } from './views/categories.js';
 import { addExp, renderExp, deleteExp, moveExpUp, moveExpDown, handleDragStartExp, handleDragOverExp, handleDropExp, handleDragEndExp, addEdu, renderEdu, deleteEdu, moveEduUp, moveEduDown, addLang, renderLangs, deleteLang, moveLangUp, moveLangDown, syncLangs, addLink, renderLinks, saveResume, cancelResume } from './views/resume.js';
@@ -48,6 +49,23 @@ window.saveProject = saveProject;
 window.onTemplateChange = onTemplateChange;
 window.onVideoSourceChange = onVideoSourceChange;
 window.onVideoOrientationChange = onVideoOrientationChange;
+window.moveProjectDirectly = moveProjectDirectly;
+
+window.renderProjectsOrder = renderProjectsOrder;
+window.searchProjectsOrder = searchProjectsOrder;
+window.filterProjectsOrderCategory = filterProjectsOrderCategory;
+window.toggleProjectsOrderAutoSave = toggleProjectsOrderAutoSave;
+window.moveProjectOrderUp = moveProjectOrderUp;
+window.moveProjectOrderDown = moveProjectOrderDown;
+window.moveProjectOrderToTop = moveProjectOrderToTop;
+window.moveProjectOrderToBottom = moveProjectOrderToBottom;
+window.handleDragStartPo = handleDragStartPo;
+window.handleDragOverPo = handleDragOverPo;
+window.handleDropPo = handleDropPo;
+window.handleDragEndPo = handleDragEndPo;
+window.sortProjectsOrderQuick = sortProjectsOrderQuick;
+window.saveProjectsOrder = saveProjectsOrder;
+
 
 
 window.newPost = newPost;

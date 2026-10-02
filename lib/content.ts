@@ -14,7 +14,26 @@ export function getCategories() {
 export function getResume() { return readJson<Record<string, unknown>>('content/resume.json'); }
 export function getProjects(): Project[] {
   const dir = path.join(root, 'content/projects');
-  return fs.readdirSync(dir).filter((file) => file.endsWith('.md')).map((file) => { const parsed = matter(fs.readFileSync(path.join(dir, file), 'utf8')); return { ...(parsed.data as Omit<Project, 'content'>), content: parsed.content } as Project; }).sort((a, b) => new Date((b as any).date || 0).getTime() - new Date((a as any).date || 0).getTime());
+  if (!fs.existsSync(dir)) return [];
+  const rawProjects = fs.readdirSync(dir).filter((file) => file.endsWith('.md')).map((file) => {
+    const parsed = matter(fs.readFileSync(path.join(dir, file), 'utf8'));
+    return { ...(parsed.data as Omit<Project, 'content'>), content: parsed.content } as Project;
+  });
+
+  try {
+    const site = getSite() as any;
+    if (Array.isArray(site?.projectsOrder) && site.projectsOrder.length > 0) {
+      const orderMap = new Map<string, number>(site.projectsOrder.map((slug: string, idx: number) => [slug, idx]));
+      return rawProjects.sort((a, b) => {
+        const idxA = orderMap.has(a.slug) ? orderMap.get(a.slug)! : 999999;
+        const idxB = orderMap.has(b.slug) ? orderMap.get(b.slug)! : 999999;
+        if (idxA !== idxB) return idxA - idxB;
+        return new Date((b as any).date || 0).getTime() - new Date((a as any).date || 0).getTime();
+      });
+    }
+  } catch (_) {}
+
+  return rawProjects.sort((a, b) => new Date((b as any).date || 0).getTime() - new Date((a as any).date || 0).getTime());
 }
 export function getProject(slug: string) { return getProjects().find((project) => project.slug === slug); }
 

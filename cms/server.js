@@ -18,7 +18,7 @@ const readRawBody = (req) => new Promise((resolve) => { const chunks = []; req.o
 let devProcess = null;
 let buildProcess = null;
 
-const MIME = { '.html':'text/html', '.js':'application/javascript', '.css':'text/css', '.json':'application/json', '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg', '.jpeg':'image/jpeg', '.gif':'image/gif', '.webp':'image/webp', '.woff2':'font/woff2', '.woff':'font/woff', '.ttf':'font/ttf', '.otf':'font/otf', '.ico':'image/x-icon' };
+const MIME = { '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf', '.otf': 'font/otf', '.ico': 'image/x-icon' };
 
 function postToMarkdown(data) {
   const fm = {
@@ -72,46 +72,46 @@ function runCommand(cmd, args, label, res) {
 }
 
 function runGit(args) {
-    return new Promise((resolve, reject) => {
-      const gitCmd = process.platform === 'win32' ? 'git.exe' : 'git';
-      const proc = spawn(gitCmd, args, {
-        cwd: root,
-        shell: false,
-        windowsVerbatimArguments: false,
-      });
-  
-      let output = '';
-  
-      proc.stdout.on('data', (d) => (output += d.toString()));
-      proc.stderr.on('data', (d) => (output += d.toString()));
-  
-      proc.on('error', reject);
-      proc.on('close', (code) => {
-        resolve({
-          code,
-          output: output.trim(),
-        });
+  return new Promise((resolve, reject) => {
+    const gitCmd = process.platform === 'win32' ? 'git.exe' : 'git';
+    const proc = spawn(gitCmd, args, {
+      cwd: root,
+      shell: false,
+      windowsVerbatimArguments: false,
+    });
+
+    let output = '';
+
+    proc.stdout.on('data', (d) => (output += d.toString()));
+    proc.stderr.on('data', (d) => (output += d.toString()));
+
+    proc.on('error', reject);
+    proc.on('close', (code) => {
+      resolve({
+        code,
+        output: output.trim(),
       });
     });
-  }
+  });
+}
 
 function runCommandAsync(cmd, args, opts = {}) {
-    return new Promise((resolve, reject) => {
-      const proc = spawn(cmd, args, {
-        cwd: opts.cwd || root,
-        shell: true,
-        stdio: ['ignore', 'pipe', 'pipe'],
-      });
-      let stdout = '';
-      let stderr = '';
-      proc.stdout.on('data', (d) => (stdout += d.toString()));
-      proc.stderr.on('data', (d) => (stderr += d.toString()));
-      proc.on('error', reject);
-      proc.on('close', (code) => {
-        resolve({ code, stdout: stdout.trim(), stderr: stderr.trim() });
-      });
+  return new Promise((resolve, reject) => {
+    const proc = spawn(cmd, args, {
+      cwd: opts.cwd || root,
+      shell: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
     });
-  }
+    let stdout = '';
+    let stderr = '';
+    proc.stdout.on('data', (d) => (stdout += d.toString()));
+    proc.stderr.on('data', (d) => (stderr += d.toString()));
+    proc.on('error', reject);
+    proc.on('close', (code) => {
+      resolve({ code, stdout: stdout.trim(), stderr: stderr.trim() });
+    });
+  });
+}
 
 function randomCommitMessage() {
   const id = Math.random().toString(36).slice(2, 8);
@@ -528,7 +528,7 @@ const server = http.createServer(async (req, res) => {
         const fonts = [];
         for (const f of fs.readdirSync(fontDir)) {
           const ext = path.extname(f).toLowerCase();
-          if (!['.woff2','.woff','.ttf','.otf'].includes(ext)) continue;
+          if (!['.woff2', '.woff', '.ttf', '.otf'].includes(ext)) continue;
           const stat = fs.statSync(path.join(fontDir, f));
           fonts.push({ name: f, path: `/fonts/${f}`, size: stat.size, format: ext.slice(1) });
         }
@@ -581,13 +581,13 @@ const server = http.createServer(async (req, res) => {
             });
           } else {
             // detached:true gives the spawned shell its own process group; kill the whole group
-            try { process.kill(-pid, 'SIGTERM'); } catch (_) { try { process.kill(pid, 'SIGTERM'); } catch (__) {} }
+            try { process.kill(-pid, 'SIGTERM'); } catch (_) { try { process.kill(pid, 'SIGTERM'); } catch (__) { } }
             // Grace period, then escalate to SIGKILL in case children ignore SIGTERM
             await new Promise((r) => setTimeout(r, 2000));
-            try { process.kill(-pid, 'SIGKILL'); } catch (_) { try { process.kill(pid, 'SIGKILL'); } catch (__) {} }
+            try { process.kill(-pid, 'SIGKILL'); } catch (_) { try { process.kill(pid, 'SIGKILL'); } catch (__) { } }
           }
         } catch (_) {
-          try { proc.kill(); } catch (__) {}
+          try { proc.kill(); } catch (__) { }
         }
         return true;
       };
@@ -688,7 +688,7 @@ const server = http.createServer(async (req, res) => {
             currentVersion = fs.readFileSync(versionFile, 'utf8').trim();
           }
 
-          await runGit(['fetch', 'upstream', '--tags']).catch(() => {});
+          await runGit(['fetch', 'upstream', '--tags']).catch(() => { });
 
           const tagsRes = await runGit(['tag', '-l']);
           let latestVersion = currentVersion;
@@ -844,7 +844,7 @@ const server = http.createServer(async (req, res) => {
 
             try {
               const rollbackRes = await runGit(['reset', '--hard', 'HEAD']).catch(() => ({ code: -1 }));
-              await runGit(['clean', '-fd']).catch(() => {});
+              await runGit(['clean', '-fd']).catch(() => { });
 
               // Full restore from backup
               fullRestore(backupDir, sse);
