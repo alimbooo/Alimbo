@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ThemeToggle } from './theme-toggle';
 import { getMenu } from '@/lib/content';
 import { MobileMenu } from './mobile-menu';
+import { Icon } from '@/src/icons';
 
 export function Header({ site }: { site: Record<string, unknown> }) {
   const menu = getMenu();
@@ -31,15 +32,31 @@ export function Header({ site }: { site: Record<string, unknown> }) {
 }
 
 export function Footer({ site }: { site: Record<string, unknown> }) {
-  const footerText = typeof site.footerText === 'string'
+  const rawFooter = typeof site.footerText === 'string' && site.footerText.trim() !== ''
     ? site.footerText
-    : `© ${new Date().getFullYear()} ${String(site.name)}. همه حقوق محفوظ است.`;
+    : `© ${new Date().getFullYear()} ${String(site.name)}`;
+  const footerText = rawFooter.replace(/\.?\s*همه حقوق محفوظ است\.?/g, '').trim();
+
+  const telegramUrl = (site.hero as any)?.telegram || (site.socials as any)?.telegram || 'https://t.me/alimbooo';
 
   return (
     <footer className="border-t border-[var(--border)] py-6">
-      <div className="container flex flex-col gap-3 text-sm text-[var(--muted)] sm:flex-row sm:items-center sm:justify-between">
+      <div className="container flex flex-col gap-4 text-sm text-[var(--muted)] sm:flex-row sm:items-center sm:justify-between">
         <span>{footerText}</span>
-        <div className="flex gap-5"></div>
+        {telegramUrl && (
+          <div className="flex items-center gap-3">
+            <a
+              href={telegramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-1.5 text-xs font-medium text-[var(--foreground)] transition-all hover:border-[var(--primary)] hover:text-[var(--primary)] hover:shadow-xs group"
+              title="ارتباط با من در تلگرام"
+            >
+              <Icon name="telegram" width="16" height="16" className="text-[#2AABEE] group-hover:scale-110 transition-transform" />
+              <span>ارتباط با من</span>
+            </a>
+          </div>
+        )}
       </div>
     </footer>
   );

@@ -5,8 +5,9 @@ import { show } from '../core/router.js';
 import { val } from '../utils/helpers.js';
 
 export function renderSettings() {
-  const defaultFooter = `© ${new Date().getFullYear()} ${state.site.name || ''}. همه حقوق محفوظ است.`;
-  const footerVal = typeof state.site.footerText === 'string' ? state.site.footerText : defaultFooter;
+  const defaultFooter = `© ${new Date().getFullYear()} ${state.site.name || ''}`;
+  const rawFooter = typeof state.site.footerText === 'string' && state.site.footerText.trim() !== '' ? state.site.footerText : defaultFooter;
+  const footerVal = rawFooter.replace(/\.?\s*همه حقوق محفوظ است\.?/g, '').trim();
 
   dom.content.innerHTML = `<h2>تنظیمات سایت</h2><p class="sub">اطلاعات اصلی و سئو.</p>
     <div class="card" style="width: 850px;">
