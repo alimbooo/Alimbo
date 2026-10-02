@@ -9,8 +9,8 @@ year: ''
 date: ''
 client: نخل سبز
 role:
+  - سناریو نویسی و ایده پردازی
   - اجرای جلوی دوربین به زبان انگلیسی
-  - نگارش کال‌تو‌اکشن (CTA) موثر کمپین
 tools: []
 technologies:
   - Premiere Pro

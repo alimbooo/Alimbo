@@ -8,6 +8,15 @@ cover: /media/should-you-have-kids.webp
 year: ''
 date: ''
 client: نخل سبز
+role:
+  - ایده‌پردازی
+  - تولید تصاویر با هوش مصنوعی
+  - ترکیب سوژه‌ها
+  - تنظیم رنگ، نور و ادیت تامنیل
+tools:
+  - ChatGPT
+  - Nano Banana
+  - Photoshop
 technologies:
   - ChatGPT
   - Nano Banana
@@ -24,14 +33,5 @@ videoUrl: ''
 images:
   - /media/should-you-have-kids.webp
   - /media/islams-secret-happiness.webp
-role:
-  - ایده‌پردازی دو نسخه کانسپت مختلف
-  - تولید تصاویر با هوش مصنوعی
-  - ترکیب سوژه‌ها و چیدمان لوگوها
-  - تنظیم رنگ، نور و ادیت تامنیل
-tools:
-  - ChatGPT
-  - Nano Banana
-  - Photoshop
 ---
 این پروژه شامل دو تامنیل برای ویدیوهای یوتیوب انتشارات نخل سبز است. در پروسه تولید این تصاویر از هوش مصنوعی چت‌جی‌پی‌تی (ChatGPT) و نانو بنانا (Nano Banana) استفاده شده و ادیت نهایی، تنظیم نور، رنگ‌آمیزی  در نرم‌افزار فتوشاپ انجام گرفته است.

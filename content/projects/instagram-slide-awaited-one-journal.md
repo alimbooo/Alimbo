@@ -8,6 +8,15 @@ cover: /media/awaited-journal-1.webp
 year: ''
 date: ''
 client: نخل سبز
+role:
+  - عکاسی  از کتاب
+  - درج المان‌ها و نوشته‌ها با هوش مصنوعی
+  - اصلاح نور و رنگ و روتوش تصاویر
+  - طراحی چیدمان اسلایدی اینستاگرام
+tools:
+  - عکاسی
+  - Nano Banana
+  - Photoshop
 technologies:
   - عکاسی اختصاصی
   - Nano Banana
@@ -16,6 +25,8 @@ categories:
   - Image
   - Ai-Image
   - Image-Edit
+  - Photography-Videography
+  - Photography
 template: image
 videoOrientation: horizontal
 videoSource: host
@@ -30,14 +41,5 @@ images:
   - /media/awaited-journal-7.webp
   - /media/awaited-journal-8.webp
   - /media/awaited-journal-9.webp
-role:
-  - عکاسی صنعتی و تبلیغاتی از کتاب
-  - درج المان‌ها و نوشته‌ها با هوش مصنوعی
-  - اصلاح نور و رنگ و روتوش تصاویر
-  - طراحی چیدمان اسلایدی اینستاگرام
-tools:
-  - عکاسی اختصاصی
-  - Nano Banana
-  - Photoshop
 ---
 این پروژه یک پست اسلایدی برای اینستاگرام است که جهت معرفی ژورنال و کتاب The Awaited One تولید شده است. کل فرآیند عکاسی از کتاب توسط خودم انجام شده است. در مرحله بعد با استفاده از هوش مصنوعی نانو بنانا (Nano Banana)، متن‌ها، نوشته‌ها و المان‌های گرافیکی به تصاویر اضافه شد و در نهایت ادیت نهایی و بهینه‌سازی رنگ و نور در نرم‌افزار فتوشاپ انجام گرفت.
