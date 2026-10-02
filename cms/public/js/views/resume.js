@@ -21,6 +21,8 @@ export function renderResume() {
           <label style="margin-top:0">خلاصه (درباره من در رزومه)</label>
           <textarea id="r-summary" style="min-height:100px; margin-bottom:16px">${state.resume.summary || ''}</textarea>
 
+          <div><label style="margin-top:0">حوزه‌های فعالیت (با کاما جدا کنید)</label><input id="r-activityAreas" value="${(state.resume.activityAreas || []).join(', ')}" style="margin-bottom:16px"></div>
+
           <div class="grid2">
             <div><label style="margin-top:0">مهارت‌های اصلی (با کاما جدا کنید)</label><input id="r-skills" value="${(state.resume.skills || []).join(', ')}"></div>
             <div><label style="margin-top:0">ابزارها و فناوری‌ها (با کاما)</label><input id="r-tools" value="${(state.resume.tools || []).join(', ')}"></div>
@@ -424,6 +426,8 @@ export async function saveResume() {
   syncLangs();
 
   state.resume.summary = val('r-summary');
+  const actEl = document.getElementById('r-activityAreas');
+  if (actEl) state.resume.activityAreas = actEl.value.split(/[,،\n]/).map((s) => s.trim()).filter(Boolean);
   state.resume.skills = val('r-skills').split(/[,،\n]/).map((s) => s.trim()).filter(Boolean);
   state.resume.tools = val('r-tools').split(/[,،\n]/).map((s) => s.trim()).filter(Boolean);
   state.resume.languages = (state.resume.languages || []).flatMap((s) => s.split(/[,،\n]/).map((x) => x.trim())).filter(Boolean);

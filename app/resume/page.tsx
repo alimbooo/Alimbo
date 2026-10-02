@@ -7,6 +7,7 @@ export default function ResumePage() {
     summary: string;
     experience: { id: string; title: string; company: string; period: string; description: string }[];
     education: { id: string; title: string; school: string; period: string }[];
+    activityAreas?: string[];
     skills: string[];
     tools: string[];
     languages: string[];
@@ -89,6 +90,15 @@ export default function ResumePage() {
                 </p>
               </div>
             ))}
+
+            {resume.activityAreas && resume.activityAreas.length > 0 && (
+              <>
+                <h2 className="mb-5 mt-12 text-2xl font-bold">حوزه‌های فعالیت</h2>
+                <div className="flex flex-wrap gap-2">
+                  {resume.activityAreas.map((item) => <span className="tag" key={item}>{item}</span>)}
+                </div>
+              </>
+            )}
 
             <h2 className="mb-5 mt-12 text-2xl font-bold">مهارت‌ها</h2>
             <div className="flex flex-wrap gap-2">
