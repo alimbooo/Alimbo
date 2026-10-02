@@ -22,7 +22,7 @@
     "twitter": ""
   },
   "seoTitle": "علی اکبری",
-  "seoDescription": "نمونه‌کارهای علی اکبری در هوش مصنوعی ادیت عکاسی و فیلم‌برداری",
+  "seoDescription": "نمونه‌کارهای علی اکبری در تولیدکننده محتوای تصویری\n\n",
   "ogImage": "/media/profile.svg",
   "font": "Arad-VF",
   "theme": {
@@ -90,7 +90,7 @@
     "bodyFont": "Arad-VF",
     "headingFont": "Arad-VF"
   },
-  "footerText": "",
+  "footerText": "© 2026 علی اکبری",
   "homeLayout": [
     {
       "id": "projects",
